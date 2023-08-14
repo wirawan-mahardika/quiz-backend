@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id_user String @id @default(uuid())
+  username String @db.VarChar(21) @unique
+  age Int @db.TinyInt
+  email String @db.VarChar(51) @unique
+  name String @db.VarChar(201)
+  password String
+
+  user_score User_Score[]
+
+  @@map("user")
+}
+
+model Subject {
+  id_subject String @id @db.Char(6)
+  name String @db.VarChar(101)
+  topic String @db.VarChar(101)
+
+  question Questions[]
+  user_score User_Score?
+
+  @@map("subject")
+}
+
+model Questions {
+  id_question Int @id @default(autoincrement())
+  id_subject String @db.Char(6)
+  pertanyaan String @db.Text
+  a String @db.VarChar(101)
+  b String @db.VarChar(101)
+  c String @db.VarChar(101)
+  d String @db.VarChar(101)
+  answer Answer
+
+  subject Subject @relation(fields: [id_subject], references: [id_subject])
+
+  @@map("question")
+}
+
+enum Answer {
+  a
+  b
+  c
+  d
+}
+
+model User_Score {
+  id_score Int @id @default(autoincrement())
+  id_subject String @db.Char(6) @unique
+  id_user String @db.Char(36)
+  score Int
+  createdAt DateTime @db.Timestamp()
+
+  user User @relation(fields: [id_user], references: [id_user])
+  subject Subject @relation(fields: [id_subject], references: [id_subject])
+
+  @@map("user_score")
+}

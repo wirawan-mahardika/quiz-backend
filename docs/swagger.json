@@ -1,0 +1,562 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "quiz RESTful API",
+    "version": "1.0.0",
+    "contact": {
+      "name": "wirawan mahardika",
+      "email": "wirawanmahardika10@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:1000",
+      "description": "development servers"
+    }
+  ],
+  "paths": {
+    "/users/register": {
+      "post": {
+        "tags": ["users"],
+        "summary": "user register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 11
+                  },
+                  "age": {
+                    "type": "number",
+                    "maxLength": 200
+                  },
+                  "username": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 6
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 6
+                  },
+                  "password": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 6
+                  }
+                }
+              },
+              "example": {
+                "email": "john@gmail.com",
+                "username": "john-doe",
+                "name": "john doe",
+                "password": "john123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "register success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "register success, account has been created"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "409": {
+            "description": "conflict entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 409,
+                  "status": "NOT OK",
+                  "message": "username already exist"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["users"],
+        "summary": "user login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 11
+                  },
+                  "password": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 6
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "login success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "login success"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          }
+        }
+      }
+    },
+    "/user/check-auth": {
+      "get": {
+        "tags": ["user"],
+        "summary": "check if user is authenticated",
+        "responses": {
+          "200": {
+            "description": "user is authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "user is authenticated",
+                  "data": {
+                    "email": "johndoe@gmail.com",
+                    "username": "john-doe",
+                    "name": "johndoe"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    },
+    "/user/answer": {
+      "post": {
+        "tags": ["user"],
+        "summary": "collect user answers",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id_question": {
+                      "type": "integer"
+                    },
+                    "answer": {
+                      "type": "string",
+                      "enum": ["a", "b", "c", "d"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "the test result you submitted has been accepted"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    },
+    "/user/{id_user}/check-scores": {
+      "get": {
+        "tags": ["user"],
+        "summary": "get all user scores",
+        "description": "get all scores by default",
+        "parameters": [
+          {
+            "name": "id_user",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "subject",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "topic",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success get scores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "success get scores",
+                  "datas": [
+                    {
+                      "subject": "Physics",
+                      "topic": "Thermodynamics",
+                      "rate": 90,
+                      "accept-date": "2008-05-04"
+                    },
+                    {
+                      "subject": "Chemistry",
+                      "topic": "Atom Structure",
+                      "rate": 89,
+                      "accept-date": "2008-05-22"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subjects": {
+      "get": {
+        "tags": ["subject"],
+        "summary": "get all subjects by default",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "MySQL Course"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success get subjects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "subjects get succesfully",
+                  "datas": [
+                    {
+                      "id_subject": "15",
+                      "name": "Physics",
+                      "topic": "Thermodynamics"
+                    },
+                    {
+                      "id_subject": "21",
+                      "name": "Chemistry",
+                      "topic": "Atom Structure"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "subjects not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 404,
+                  "status": "NOT OK",
+                  "message": "Cannot find subject that contain {scieence}"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subject/{subject}/{topic}": {
+      "get": {
+        "tags": ["subject"],
+        "summary": "get all questions",
+        "description": "get all questions based on topicas",
+        "parameters": [
+          {
+            "name": "subject",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Physics"
+          },
+          {
+            "name": "topic",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "vector"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success get all questions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "success get all questions",
+                  "datas": [
+                    {
+                      "id_question": "23",
+                      "question": "What is the result of 1 + 2",
+                      "a": "1",
+                      "b": "4",
+                      "c": "2",
+                      "d": "3",
+                      "answer": "d"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "questions not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 404,
+                  "status": "OK",
+                  "message": "question not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "response": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "maximum": 599,
+            "minimum": 200
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "object",
+            "nullable": true,
+            "description": "details of the response, it will contain success detail or error detail"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "description": "contain only one data"
+          },
+          "datas": {
+            "type": "array",
+            "minItems": 1,
+            "nullable": true,
+            "description": "contain more than one relate data"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "success",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/response"
+            },
+            "examples": {
+              "sucesss": {
+                "value": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "{action} succesfully"
+                }
+              }
+            }
+          }
+        }
+      },
+      "201": {
+        "description": "success created",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/response"
+            },
+            "examples": {
+              "sucesss": {
+                "value": {
+                  "statusCode": 201,
+                  "status": "OK",
+                  "message": "{entity} created succesfully"
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/response"
+            },
+            "example": {
+              "statusCode": 400,
+              "status": "NOT OK",
+              "message": "invalid input"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/response"
+            },
+            "example": {
+              "statusCode": 401,
+              "status": "NOT OK",
+              "message": "user unauthorized"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "INTERNAL SERVER ERROR",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/response"
+            },
+            "example": {
+              "statusCode": 500,
+              "status": "NOT OK",
+              "message": "INTERNAL SERVER ERROR"
+            }
+          }
+        }
+      }
+    },
+    "headers": {
+      "Authorization": {
+        "schema": {
+          "type": "string",
+          "example": "Bearer t0k3nH@$hEd432t5457treert3dsgfdg6"
+        }
+      }
+    }
+  }
+}
