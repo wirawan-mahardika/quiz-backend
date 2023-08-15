@@ -55,7 +55,9 @@ const login = (req, res, next) => {
 const logout = (req, res, next) => {
   req.logOut((err) => {
     if (err) {
-      throw new ResponseError(500, "Failed to logout, something went wrong");
+      return next(
+        new ResponseError(500, "Failed to logout, something went wrong")
+      );
     }
     req.session.destroy();
     res.clearCookie("user-session");
@@ -67,8 +69,26 @@ const logout = (req, res, next) => {
   });
 };
 
+const refreshToken = (req, res, next) => {
+  try {
+    const refreshToken = req.session.passport.user.refreshToken;
+    const token = userService.refreshToken(refreshToken);
+    res.status(201).json({
+      statusCode: 201,
+      status: "OK",
+      message: "success generate new token",
+      data: {
+        token,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   login,
   logout,
+  refreshToken,
 };

@@ -3,7 +3,7 @@ import web from "../src/application/web.js";
 import supertest from "supertest";
 
 const req = supertest(web);
-let token, refreshToken, cookie;
+let token, newToken, cookie;
 
 jest.mock("@prisma/client", () => {
   const originalModule = jest.requireActual("@prisma/client");
@@ -56,7 +56,7 @@ jest.mock("@prisma/client", () => {
       }
       return id;
     };
-    $on = () => "not implement in while testing";
+    $on = () => "not implement while testing";
   }
   return {
     __esModule: true,
@@ -218,23 +218,84 @@ describe("POST /api/users/login", () => {
   });
 });
 
-describe("DELETE /api/users/logout", () => {
-  test('should reject if user is not logged in', async () => {
-    const res = await req.delete("/api/user/logout")
-    
-    expect(res.body).toMatchObject({})
+describe("GET /api/user/refresh-token", () => {
+  test("should reject if user is not logged in", async () => {
+    const res = await req.get("/api/user/refresh-token");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({
+      statusCode: 401,
+      status: "NOT OK",
+      message: "Login is needed",
+      data: null,
+      detail: null,
+    });
   });
+
+  test("should success get the token", async () => {
+    const res = await req.get("/api/user/refresh-token").set("Cookie", cookie);
+
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({
+      statusCode: 201,
+      status: "OK",
+      message: "success generate new token",
+    });
+    expect(res.body).toHaveProperty("data");
+    expect(res.body.data).toHaveProperty("token");
+    newToken = res.body.data.token;
+  });
+});
+
+describe("DELETE /api/user/logout", () => {
+  test("should reject if user is not logged in", async () => {
+    const res = await req.delete("/api/user/logout");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({
+      statusCode: 401,
+      status: "NOT OK",
+      message: "Login is needed",
+    });
+  });
+
+  test("should reject if token jwt is missing", async () => {
+    const res = await req.delete("/api/user/logout").set("Cookie", cookie);
+
+    expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({
+      statusCode: 401,
+      status: "NOT OK",
+      message: "access denied due to missing or invalid access token",
+    });
+  });
+
   test("should success logout", async () => {
+    const res = await req
+      .delete("/api/user/logout")
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + newToken); // should success if use
+    // .set("Authorization", "Bearer " + token);   // one of these two token
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      statusCode: 200,
+      status: "OK",
+      message: "Logout success",
+    });
+  });
+
+  test("should reject if logout is succeed", async () => {
     const res = await req
       .delete("/api/user/logout")
       .set("Cookie", cookie)
       .set("Authorization", "Bearer " + token);
 
-    expect(res.status).toBe(200)
+    expect(res.status).toBe(401);
     expect(res.body).toMatchObject({
-      statusCode: 200,
-      status: "OK",
-      message: "Logout success",
+      statusCode: 401,
+      status: "NOT OK",
+      message: "Login is needed",
     });
   });
 });

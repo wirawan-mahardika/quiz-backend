@@ -9,6 +9,20 @@
     "dev": "nodemon index",
     "dbgenerate": "prisma generate"
   },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    },
+    "collectCoverage": false,
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
+  },
   "keywords": [
     "serverside"
   ],

@@ -17,9 +17,12 @@ export function intializePassport(passport) {
     })
   );
   passport.serializeUser((user, done) => {
-    const refreshToken = createJwtToken({
-      email: user.email,
-    });
+    const refreshToken = createJwtToken(
+      {
+        email: user.email,
+      },
+      true
+    );
     done(null, { id_user: user.id_user, refreshToken: refreshToken });
   });
   passport.deserializeUser(async (user, done) => {

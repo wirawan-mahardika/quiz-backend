@@ -7,7 +7,10 @@ export function jwtAuthMiddleware(req, res, next) {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      throw new ResponseError(401, "access denied due to missing access token");
+      throw new ResponseError(
+        401,
+        "access denied due to missing or invalid access token"
+      );
     }
     return next();
   });
