@@ -22,10 +22,10 @@ const register = async (request) => {
 }
 
 const login = (request) => {
-    validate(userLoginValidate, request)
-}
+  return validate(userLoginValidate, request);
+};
 
 export default {
-    register,
-    login
-}
+  register,
+  login,
+};

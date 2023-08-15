@@ -14,6 +14,7 @@ export function errorMiddleware(err,req,res,next) {
             detail: err.detail
         })
     } else {
+        console.log(err);
         return res.status(500).json({
             statusCode: 500,
             status: "NOT OK",

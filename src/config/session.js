@@ -21,16 +21,20 @@ function mysqlStore(session) {
 
 export function sessionConfig(session) {
     return {
-        secret: process.env.SESSION_COOKIE_SECRET,
-        resave: false,
-        saveUninitialized: false,
-        store: process.env.TESTING === 'true' ? new MemoryStore() : mysqlStore(session),
-        cookie: {
-            httpOnly: true,
-            sameSite: 'strict',
-            path: "/",
-            signed: true,
-            maxAge: 1000 * 3600 * 24 * 4
-        }
-    }
+      name: "user-session",
+      secret: process.env.SESSION_COOKIE_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      store:
+        process.env.TESTING === "true"
+          ? new MemoryStore()
+          : mysqlStore(session),
+      cookie: {
+        httpOnly: true,
+        sameSite: "strict",
+        path: "/",
+        signed: true,
+        maxAge: 1000 * 3600 * 24 * 4,
+      },
+    };
 }

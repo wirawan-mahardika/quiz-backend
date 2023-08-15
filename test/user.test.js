@@ -3,6 +3,7 @@ import web from "../src/application/web.js";
 import supertest from "supertest";
 
 const req = supertest(web);
+let token, refreshToken, cookie;
 
 jest.mock("@prisma/client", () => {
   const originalModule = jest.requireActual("@prisma/client");
@@ -21,9 +22,9 @@ jest.mock("@prisma/client", () => {
       findUnique: jest.fn().mockImplementation((arg) => {
         const result = this.#userData.find(
           (user) =>
-            user.email === arg.where?.email 
-            // user.id_user === arg.where?.id_user
-            );
+            user.email === arg.where?.email ||
+            user.id_user === arg.where?.id_user
+        );
         return Promise.resolve(result);
       }),
       count: jest.fn().mockImplementation((args) => {
@@ -36,7 +37,7 @@ jest.mock("@prisma/client", () => {
         return Promise.resolve(count);
       }),
       create: jest.fn().mockImplementation((args) => {
-        args.data.id_user = this.idGenerate()
+        args.data.id_user = this.idGenerate();
         this.#userData.push(args.data);
         const result = {};
         for (const key in args.select) {
@@ -44,7 +45,7 @@ jest.mock("@prisma/client", () => {
             result[key] = args.data[key];
           }
         }
-        return Promise.resolve(result)
+        return Promise.resolve(result);
       }),
     };
 
@@ -78,7 +79,7 @@ describe("POST /api/users/register", () => {
       statusCode: 400,
       status: "NOT OK",
       data: null,
-      detail: null
+      detail: null,
     });
     expect(res.body).toHaveProperty("message");
   });
@@ -88,6 +89,7 @@ describe("POST /api/users/register", () => {
       email: "wirawan@gmail.com",
       name: "wirawan mahardika",
       username: "wirawan",
+      age: 19,
       password: "asdfghjkl;",
     };
     const res = await req.post("/api/users/register").send(body);
@@ -96,7 +98,7 @@ describe("POST /api/users/register", () => {
       statusCode: 400,
       status: "NOT OK",
       message: "weak password",
-      data: null
+      data: null,
     });
     expect(res.body.detail).toBeDefined();
     expect(res.body.detail).toHaveProperty("warning");
@@ -109,6 +111,7 @@ describe("POST /api/users/register", () => {
       name: "wirawan mahardika",
       username: "wirawan",
       password: "wirawan123",
+      age: 19,
     };
     const res = await req.post("/api/users/register").send(body);
     expect(res.status).toBe(201);
@@ -129,6 +132,7 @@ describe("POST /api/users/register", () => {
       name: "wirawan mahardika",
       username: "wirawan",
       password: "wirawan123",
+      age: 19,
     };
     const res = await req.post("/api/users/register").send(body);
     expect(res.status).toBe(409);
@@ -148,9 +152,9 @@ describe("POST /api/users/login", () => {
     };
     const res = await req
       .post("/api/users/login")
-      .send({ email: 'wrong.email@gmail.com', password: body.password });
+      .send({ email: "wrong.email@gmail.com", password: body.password });
 
-    expect(res.status).toBe(401)
+    expect(res.status).toBe(401);
     expect(res.body).toMatchObject({
       statusCode: 401,
       status: "NOT OK",
@@ -165,9 +169,9 @@ describe("POST /api/users/login", () => {
     };
     const res = await req
       .post("/api/users/login")
-      .send({ email: body.email, password: 'wrong password'});
+      .send({ email: body.email, password: "wrong password" });
 
-    expect(res.status).toBe(401)
+    expect(res.status).toBe(401);
     expect(res.body).toMatchObject({
       statusCode: 401,
       status: "NOT OK",
@@ -180,10 +184,57 @@ describe("POST /api/users/login", () => {
       email: "wirawan@gmail.com",
       password: "wirawan123",
     };
+    const res = await req.post("/api/users/login").send(body);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      statusCode: 200,
+      status: "OK",
+      message: "login success",
+    });
+    expect(res.body).toHaveProperty("data");
+    expect(res.body.data).toHaveProperty("token");
+    token = res.body.data.token;
+    cookie = res.headers["set-cookie"];
+  });
+
+  test("should reject if user already logged in", async () => {
+    const body = {
+      email: "wirawan@gmail.com",
+      password: "wirawan123",
+    };
     const res = await req
       .post("/api/users/login")
-      .send({ email: body.email, password: body.password});
+      .send(body)
+      .set("Cookie", cookie);
+    // .set("Authorization", "Bearer " + token);
+
+    expect(res.status).toBe(403);
+    expect(res.body).toMatchObject({
+      statusCode: 403,
+      status: "NOT OK",
+      message: "You're already logged in",
+    });
+  });
+});
+
+describe("DELETE /api/users/logout", () => {
+  test('should reject if user is not logged in', async () => {
+    const res = await req.delete("/api/user/logout")
+    
+    expect(res.body).toMatchObject({})
+  });
+  test("should success logout", async () => {
+    const res = await req
+      .delete("/api/user/logout")
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + token);
 
     expect(res.status).toBe(200)
+    expect(res.body).toMatchObject({
+      statusCode: 200,
+      status: "OK",
+      message: "Logout success",
+    });
   });
 });
