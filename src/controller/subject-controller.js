@@ -1,6 +1,6 @@
 import subjectService from "../services/subject-service.js";
 
-export const createSubjectAndTopic = async (req, res, next) => {
+const createSubjectAndTopic = async (req, res, next) => {
   try {
     const result = await subjectService.createSubjectAndTopic(req.body);
     res
@@ -8,9 +8,30 @@ export const createSubjectAndTopic = async (req, res, next) => {
       .json({
         statusCode: 201,
         status: "OK",
-        message: "new topic and subject has been created",
+        message: "new topic and/or subject has been created",
         data: result,
       })
       .end();
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateSubjectAndTopic = async (req, res, next) => {
+  try {
+    const result = await subjectService.updateSubjectAndTopic(req.body);
+    res.json({
+      statusCode: 200,
+      status: "OK",
+      message: "update successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  createSubjectAndTopic,
+  updateSubjectAndTopic,
 };

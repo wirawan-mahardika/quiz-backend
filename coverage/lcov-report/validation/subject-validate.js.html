@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for routes/publicRoute.js</title>
+    <title>Code coverage report for validation/subject-validate.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">routes</a> publicRoute.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">validation</a> subject-validate.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
@@ -77,35 +77,41 @@
 <a name='L12'></a><a href='#L12'>12</a>
 <a name='L13'></a><a href='#L13'>13</a>
 <a name='L14'></a><a href='#L14'>14</a>
-<a name='L15'></a><a href='#L15'>15</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import express from 'express'
-import userController from "../controller/user-controller.js";
-import { ensureAuthenticated, passportAuthMiddleware } from '../middleware/passportMiddlewares.js';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import Joi from "joi";
 &nbsp;
-const publicRoute = express.Router();
+export const createSubjectAndTopicSchema = Joi.object({
+  name: Joi.string().required().max(100),
+  topic: Joi.string().required().max(100),
+})
+  .required()
+  .options({ allowUnknown: false });
 &nbsp;
-/* prettier-ignore-start */
-publicRoute.post("/api/users/register", ensureAuthenticated, userController.register);
-publicRoute.post("/api/users/login", ensureAuthenticated, userController.login);
-publicRoute.delete("/api/users/logout", ensureAuthenticated, userController.logout);
-&nbsp;
-publicRoute.get("/api/user/refresh-token", passportAuthMiddleware, userController.refreshToken);
-/* prettier-ignore-end */
-&nbsp;
-export default publicRoute</pre></td></tr></table></pre>
+export const updateSubjectAndTopicSchema = Joi.object({
+  id_subject: Joi.string().required().max(6).min(6),
+  name: Joi.string().required().max(100),
+  topic: Joi.string().required().max(100),
+})
+  .required()
+  .options({ allowUnknown: false });
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->

@@ -15,7 +15,7 @@
     }
   ],
   "paths": {
-    "/users/register": {
+    "/api/users/register": {
       "post": {
         "tags": ["users"],
         "summary": "user register",
@@ -104,7 +104,7 @@
         }
       }
     },
-    "/users/login": {
+    "/api/users/login": {
       "post": {
         "tags": ["users"],
         "summary": "user login",
@@ -151,7 +151,7 @@
         }
       }
     },
-    "/user/refresh-token": {
+    "/api/user/refresh-token": {
       "get": {
         "tags": ["user"],
         "summary": "renew jwt token",
@@ -204,7 +204,7 @@
         }
       }
     },
-    "/user/logout": {
+    "/api/user/logout": {
       "delete": {
         "tags": ["user"],
         "summary": "user logout",
@@ -265,7 +265,7 @@
         }
       }
     },
-    "/subject": {
+    "/api/subject": {
       "post": {
         "tags": ["subject"],
         "summary": "create subject and topic",
@@ -349,6 +349,11 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "id_subject": {
+                    "type": "string",
+                    "maxLength": 6,
+                    "minLength": 6
+                  },
                   "name": {
                     "type": "string",
                     "maxLength": 100,
@@ -404,7 +409,7 @@
         }
       }
     },
-    "/subjects": {
+    "/api/subjects": {
       "get": {
         "tags": ["subject"],
         "summary": "get all subjects by default",
@@ -465,7 +470,7 @@
         }
       }
     },
-    "/subject/{subject}/{topic}": {
+    "/api/subject/{subject}/{topic}": {
       "get": {
         "tags": ["subject"],
         "summary": "get all questions",
@@ -535,7 +540,7 @@
         }
       }
     },
-    "/user/answer": {
+    "/api/user/answer": {
       "post": {
         "tags": ["user"],
         "summary": "collect user answers",
@@ -585,7 +590,7 @@
         }
       }
     },
-    "/user/{id_user}/check-scores": {
+    "/api/user/{id_user}/check-scores": {
       "get": {
         "tags": ["user"],
         "summary": "get all user scores",
