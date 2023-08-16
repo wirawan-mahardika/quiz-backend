@@ -18,7 +18,7 @@ const register = async (req, res, next) => {
 
 const login = (req, res, next) => {
   try {
-    const user = userService.login(req.body);
+    userService.login(req.body);
     passport.authenticate("local", (err, user) => {
       if (err) {
         return res

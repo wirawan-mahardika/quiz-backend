@@ -41,7 +41,7 @@
                   },
                   "name": {
                     "type": "string",
-                    "maxLength": 50,
+                    "maxLength": 100,
                     "minLength": 6
                   },
                   "password": {
@@ -53,6 +53,7 @@
               },
               "example": {
                 "email": "john@gmail.com",
+                "age": 25,
                 "username": "john-doe",
                 "name": "john doe",
                 "password": "john123"
@@ -71,7 +72,7 @@
                 "example": {
                   "statusCode": 200,
                   "status": "OK",
-                  "message": "register success, account has been created"
+                  "message": "signup success, account has been created"
                 }
               }
             }
@@ -92,7 +93,7 @@
                 "example": {
                   "statusCode": 409,
                   "status": "NOT OK",
-                  "message": "username already exist"
+                  "message": "email already registered"
                 }
               }
             }
@@ -144,19 +145,20 @@
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/400"
+          "401": {
+            "$ref": "#/components/responses/401"
           }
         }
       }
     },
-    "/user/check-auth": {
+    "/user/refresh-token": {
       "get": {
         "tags": ["user"],
-        "summary": "check if user is authenticated",
+        "summary": "renew jwt token",
+        "description": "get new jwt token to replace the expired one",
         "responses": {
           "200": {
-            "description": "user is authenticated",
+            "description": "success get new token",
             "content": {
               "application/json": {
                 "schema": {
@@ -165,12 +167,154 @@
                 "example": {
                   "statusCode": 200,
                   "status": "OK",
-                  "message": "user is authenticated",
+                  "message": "success generate new token",
                   "data": {
-                    "email": "johndoe@gmail.com",
-                    "username": "john-doe",
-                    "name": "johndoe"
+                    "token": "tokenjwthashed"
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "examples": {
+                  "login": {
+                    "value": {
+                      "statusCode": 401,
+                      "status": "NOT OK",
+                      "message": "Login is needed"
+                    }
+                  },
+                  "token": {
+                    "value": {
+                      "statusCode": 401,
+                      "status": "NOT OK",
+                      "message": "access denied due to missing or invalid access token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/logout": {
+      "delete": {
+        "tags": ["user"],
+        "summary": "user logout",
+        "description": "erase session authorization and authentication",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer {token}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success logout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "Logout success"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "examples": {
+                  "login": {
+                    "value": {
+                      "statusCode": 401,
+                      "status": "NOT OK",
+                      "message": "Login is needed"
+                    }
+                  },
+                  "token": {
+                    "value": {
+                      "statusCode": 401,
+                      "status": "NOT OK",
+                      "message": "access denied due to missing or invalid access token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subject": {
+      "post": {
+        "tags": ["subject"],
+        "summary": "create subject and topic",
+        "description": "create subject and topic to the database",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer {token}"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                  },
+                  "topic": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "success create new subject and topic",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 201,
+                  "status": "OK",
+                  "message": "sucess create new subject and/or topic"
                 }
               }
             }
@@ -182,27 +326,38 @@
             "$ref": "#/components/responses/401"
           }
         }
-      }
-    },
-    "/user/answer": {
-      "post": {
-        "tags": ["user"],
-        "summary": "collect user answers",
+      },
+      "patch": {
+        "tags": ["subject"],
+        "summary": "update subject",
+        "description": "update subject and topic in the database",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Bearer {token}"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "id_question": {
-                      "type": "integer"
-                    },
-                    "answer": {
-                      "type": "string",
-                      "enum": ["a", "b", "c", "d"]
-                    }
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                  },
+                  "topic": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
                   }
                 }
               }
@@ -211,7 +366,7 @@
         },
         "responses": {
           "200": {
-            "description": "success",
+            "description": "success update subject or topic",
             "content": {
               "application/json": {
                 "schema": {
@@ -220,7 +375,7 @@
                 "example": {
                   "statusCode": 200,
                   "status": "OK",
-                  "message": "the test result you submitted has been accepted"
+                  "message": "update succesfully"
                 }
               }
             }
@@ -230,67 +385,18 @@
           },
           "401": {
             "$ref": "#/components/responses/401"
-          }
-        }
-      }
-    },
-    "/user/{id_user}/check-scores": {
-      "get": {
-        "tags": ["user"],
-        "summary": "get all user scores",
-        "description": "get all scores by default",
-        "parameters": [
-          {
-            "name": "id_user",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
           },
-          {
-            "name": "subject",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "topic",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "success get scores",
+          "409": {
+            "description": "conflict entity",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/response"
                 },
                 "example": {
-                  "statusCode": 200,
-                  "status": "OK",
-                  "message": "success get scores",
-                  "datas": [
-                    {
-                      "subject": "Physics",
-                      "topic": "Thermodynamics",
-                      "rate": 90,
-                      "accept-date": "2008-05-04"
-                    },
-                    {
-                      "subject": "Chemistry",
-                      "topic": "Atom Structure",
-                      "rate": 89,
-                      "accept-date": "2008-05-22"
-                    }
-                  ]
+                  "statusCode": 409,
+                  "status": "NOT OK",
+                  "message": "conflict with existing data"
                 }
               }
             }
@@ -428,6 +534,120 @@
           }
         }
       }
+    },
+    "/user/answer": {
+      "post": {
+        "tags": ["user"],
+        "summary": "collect user answers",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id_question": {
+                      "type": "integer"
+                    },
+                    "answer": {
+                      "type": "string",
+                      "enum": ["a", "b", "c", "d"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "the test result you submitted has been accepted"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    },
+    "/user/{id_user}/check-scores": {
+      "get": {
+        "tags": ["user"],
+        "summary": "get all user scores",
+        "description": "get all scores by default",
+        "parameters": [
+          {
+            "name": "id_user",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "subject",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "topic",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success get scores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "success get scores",
+                  "datas": [
+                    {
+                      "subject": "Physics",
+                      "topic": "Thermodynamics",
+                      "rate": 90,
+                      "accept-date": "2008-05-04"
+                    },
+                    {
+                      "subject": "Chemistry",
+                      "topic": "Atom Structure",
+                      "rate": 89,
+                      "accept-date": "2008-05-22"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -520,16 +740,27 @@
         }
       },
       "401": {
-        "description": "unauthorized",
+        "description": "unauthorized user",
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/response"
             },
-            "example": {
-              "statusCode": 401,
-              "status": "NOT OK",
-              "message": "user unauthorized"
+            "examples": {
+              "login": {
+                "value": {
+                  "statusCode": 401,
+                  "status": "NOT OK",
+                  "message": "Login is needed"
+                }
+              },
+              "token": {
+                "value": {
+                  "statusCode": 401,
+                  "status": "NOT OK",
+                  "message": "access denied due to missing or invalid access token"
+                }
+              }
             }
           }
         }
@@ -547,14 +778,6 @@
               "message": "INTERNAL SERVER ERROR"
             }
           }
-        }
-      }
-    },
-    "headers": {
-      "Authorization": {
-        "schema": {
-          "type": "string",
-          "example": "Bearer t0k3nH@$hEd432t5457treert3dsgfdg6"
         }
       }
     }

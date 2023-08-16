@@ -1,4 +1,3 @@
-import { prisma } from "../src/application/prisma.js";
 import web from "../src/application/web.js";
 import supertest from "supertest";
 
@@ -145,6 +144,19 @@ describe("POST /api/users/register", () => {
 });
 
 describe("POST /api/users/login", () => {
+  test("should reject if input is invalid", async () => {
+    const res = await req
+      .post("/api/users/login")
+      .send({ email: "invalid email", password: "" });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toMatchObject({
+      statusCode: 400,
+      status: "NOT OK",
+    });
+    expect(res.body).toHaveProperty("message");
+  });
+
   test("should reject if email is not registered", async () => {
     const body = {
       email: "wirawan@gmail.com",

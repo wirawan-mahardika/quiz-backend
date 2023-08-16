@@ -6,10 +6,10 @@ import session from 'express-session'
 import passport from 'passport'
 import { corsConfig } from '../config/cors.js'
 import { mainRateLimit } from '../config/rate-limit.js'
-import { sessionConfig } from '../config/session.js'
-import { intializePassport } from '../config/passport.js'
+import { sessionConfig } from "../config/session.js";
+import { intializePassport } from "../config/passport.js";
 import { errorMiddleware } from "../middleware/errorMiddleware.js";
-import publicRoute from '../routes/publicRoute.js'
+import publicRoute from "../routes/publicRoute.js";
 import { passportAuthMiddleware } from "../middleware/passportMiddlewares.js";
 import { jwtAuthMiddleware } from "../middleware/jwtMiddleware.js";
 import dotenv from "dotenv";

@@ -5,20 +5,19 @@ export function errorMiddleware(err,req,res,next) {
         return next()
         
     }
-    if(err instanceof ResponseError) {
-        return res.status(err.statusCode).json({
-            statusCode: err.statusCode,
-            status: err.status,
-            message: err.message,
-            data: err.data,
-            detail: err.detail
-        })
+    if (err instanceof ResponseError) {
+      return res.status(err.statusCode).json({
+        statusCode: err.statusCode,
+        status: err.status,
+        message: err.message,
+        data: err.data,
+        detail: err.detail,
+      });
     } else {
-        console.log(err);
-        return res.status(500).json({
-            statusCode: 500,
-            status: "NOT OK",
-            message: "INTERNAL SERVER ERROR",
-        })
+      return res.status(500).json({
+        statusCode: 500,
+        status: "NOT OK",
+        message: "INTERNAL SERVER ERROR",
+      });
     }
 }
