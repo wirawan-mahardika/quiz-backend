@@ -55,7 +55,15 @@ jest.mock("@prisma/client", () => {
     };
     subject = {
       findMany: jest.fn().mockImplementation((args) => {
-        return Promise.resolve(this.#subjectData);
+        let result = this.#subjectData;
+        if (args.where?.name?.contains) {
+          result = result.filter((s) => {
+            return s.name
+              .toLowerCase()
+              .includes(args.where.name.contains.toLowerCase());
+          });
+        }
+        return Promise.resolve(result);
       }),
       delete: jest.fn().mockImplementation((arg) => {
         return true;
@@ -293,5 +301,41 @@ describe("PATCH /api/subject", () => {
       message: "update successfully",
       data: { name: "Python", topic: "Function" },
     });
+  });
+});
+
+describe("GET /api/subject", () => {
+  test("should success get all subjects or topics", async () => {
+    const res = await req.get("/api/subject");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      statusCode: 200,
+      status: "OK",
+      message: "subjects get succesfully",
+    });
+  });
+
+  test("should reject if subject is not found", async () => {
+    const res = await req.get("/api/subject").query({ name: "sdlfhjalsk" });
+
+    expect(res.body).toMatchObject({
+      statusCode: 404,
+      status: "NOT OK",
+    });
+    expect(res.body.message).toMatch(/is not found/);
+    expect(res.body).toHaveProperty("data", null);
+  });
+
+  test("should get data match to the query", async () => {
+    const res = await req.get("/api/subject").query({ name: "py" });
+
+    expect(res.body).toMatchObject({
+      statusCode: 200,
+      status: "OK",
+      message: "subjects get succesfully",
+    });
+    expect(res.body).toHaveProperty("data");
+    expect(res.body.data.length).toBeGreaterThanOrEqual(1);
   });
 });

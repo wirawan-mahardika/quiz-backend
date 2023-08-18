@@ -462,7 +462,7 @@
                 "example": {
                   "statusCode": 404,
                   "status": "NOT OK",
-                  "message": "Cannot find subject that contain {scieence}"
+                  "message": "Topic {topic} is not found"
                 }
               }
             }

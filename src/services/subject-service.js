@@ -43,7 +43,18 @@ const updateSubjectAndTopic = async (request) => {
   });
 };
 
+const getSubjectsAndTopics = async (query) => {
+  return prisma.subject.findMany({
+    where: {
+      name: {
+        contains: query,
+      },
+    },
+  });
+};
+
 export default {
   createSubjectAndTopic,
   updateSubjectAndTopic,
+  getSubjectsAndTopics,
 };
