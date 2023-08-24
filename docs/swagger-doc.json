@@ -470,29 +470,20 @@
         }
       }
     },
-    "/api/subject/{subject}/{topic}": {
+    "/api/question/{id_subject}": {
       "get": {
         "tags": ["subject"],
         "summary": "get all questions",
-        "description": "get all questions based on topicas",
+        "description": "get all questions based on topics",
         "parameters": [
           {
-            "name": "subject",
+            "name": "id_subject",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string"
             },
             "example": "Physics"
-          },
-          {
-            "name": "topic",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "vector"
           }
         ],
         "responses": {
@@ -533,6 +524,95 @@
                   "statusCode": 404,
                   "status": "OK",
                   "message": "question not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/question": {
+      "post": {
+        "tags": ["question"],
+        "summary": "create question",
+        "description": "add new question to the database",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_subject": {
+                    "type": "string",
+                    "maxLength": 6,
+                    "minLength": 6
+                  },
+                  "question": {
+                    "type": "string",
+                    "maxLength": 65530
+                  },
+                  "a": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                  },
+                  "b": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                  },
+                  "c": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                  },
+                  "d": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                  },
+                  "e": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                  },
+                  "answer": {
+                    "type": "string",
+                    "maxLength": 1,
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "success create questions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 200,
+                  "status": "OK",
+                  "message": "subject created succesfully"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "conflict data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 409,
+                  "status": "NOT OK",
+                  "message": "question is already exist"
                 }
               }
             }

@@ -37,11 +37,12 @@ model Subject {
 model Questions {
   id_question Int @id @default(autoincrement())
   id_subject String @db.Char(6)
-  pertanyaan String @db.Text
+  question String @db.Text
   a String @db.VarChar(101)
   b String @db.VarChar(101)
   c String @db.VarChar(101)
   d String @db.VarChar(101)
+  e String @db.VarChar(101)
   answer Answer
 
   subject Subject @relation(fields: [id_subject], references: [id_subject])
@@ -54,6 +55,7 @@ enum Answer {
   b
   c
   d
+  e
 }
 
 model User_Score {
