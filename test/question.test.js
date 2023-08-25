@@ -15,192 +15,20 @@ const mockQuestion = {
   e: "this is e",
   answer: "a",
 };
+const bodyRegister = {
+  email: "wirawan@gmail.com",
+  name: "wirawan mahardika",
+  username: "wirawan",
+  password: "wirawan123",
+  age: 19,
+};
+const bodyLogin = {
+  email: "wirawan@gmail.com",
+  password: "wirawan123",
+};
 
-jest.mock("@prisma/client", () => {
-  const originalModule = jest.requireActual("@prisma/client");
-  class mockPrisma {
-    #userData = [];
-    #subjectData = [];
-    #questionsData = [];
-    #userScoreData = [];
-    user = {
-      findMany: jest.fn().mockImplementation((args) => {
-        return Promise.resolve(this.#userData);
-      }),
-      delete: jest.fn().mockImplementation((arg) => {
-        return true;
-      }),
-      findUnique: jest.fn().mockImplementation((arg) => {
-        const result = this.#userData.find(
-          (user) =>
-            user.email === arg.where?.email ||
-            user.id_user === arg.where?.id_user
-        );
-        return Promise.resolve(result);
-      }),
-      count: jest.fn().mockImplementation((args) => {
-        let count = 0;
-        this.#userData.forEach((user) => {
-          if (args.where.email === user.email) {
-            count++;
-          }
-        });
-        return Promise.resolve(count);
-      }),
-      create: jest.fn().mockImplementation((args) => {
-        args.data.id_user = this.idGenerate(36);
-        this.#userData.push(args.data);
-        const result = {};
-        for (const key in args.select) {
-          if (Object.hasOwnProperty.call(args.select, key)) {
-            result[key] = args.data[key];
-          }
-        }
-        return Promise.resolve(result);
-      }),
-    };
-    subject = {
-      findMany: jest.fn().mockImplementation((args) => {
-        let result = this.#subjectData;
-        return Promise.resolve(result);
-      }),
-      delete: jest.fn().mockImplementation((arg) => {
-        return true;
-      }),
-      findUnique: jest.fn().mockImplementation((arg) => {
-        const result = this.#subjectData.find(
-          (user) =>
-            user.id_subject === arg.where?.id_subject ||
-            user.topic === arg.where?.topic
-        );
-        return Promise.resolve(result);
-      }),
-      count: jest.fn().mockImplementation((args) => {
-        let count = 0;
-        this.#subjectData.forEach((request) => {
-          if (args.where.id_subject === request.id_subject) {
-            count++;
-          }
-        });
-        return Promise.resolve(count);
-      }),
-      create: jest.fn().mockImplementation((args) => {
-        args.data.id_subject = this.idGenerate(6);
-        this.#subjectData.push(args.data);
-        const result = {};
-        for (const key in args.select) {
-          if (Object.hasOwnProperty.call(args.select, key)) {
-            result[key] = args.data[key];
-          }
-        }
-        return Promise.resolve(result);
-      }),
-      update: jest.fn().mockImplementation((args) => {
-        const id_subject = args.where?.id_subject;
-        const eraseTargetData = this.#subjectData.filter(
-          (s) => s.id_subject !== id_subject
-        );
-        this.#subjectData = [{ id_subject, ...args.data }, ...eraseTargetData];
-        const result = {};
-        for (const key in args.select) {
-          if (Object.hasOwnProperty.call(args.select, key)) {
-            result[key] = args.data[key];
-          }
-        }
-        return Promise.resolve(result);
-      }),
-    };
-    questions = {
-      findMany: jest.fn().mockImplementation((args) => {
-        let result = this.#questionsData;
-        if (args?.where?.id_subject) {
-          result = result.filter((s) => {
-            return s.id_subject === args.where.id_subject;
-          });
-        }
-        return Promise.resolve(result);
-      }),
-      findUnique: jest.fn().mockImplementation((arg) => {
-        const result = this.#subjectData.find(
-          (user) =>
-            user.id_subject === arg.where?.id_subject ||
-            user.topic === arg.where?.topic
-        );
-        return Promise.resolve(result);
-      }),
-      count: jest.fn().mockImplementation((args) => {
-        let count = 0;
-        this.#questionsData.forEach((request) => {
-          if (args.where.question === request.question) {
-            count++;
-          }
-        });
-        return Promise.resolve(count);
-      }),
-      create: jest.fn().mockImplementation((args) => {
-        args.data.id_question = this.idGenerate(2);
-        this.#questionsData.push({
-          ...args.data,
-          id_subject: args.data.id_subject,
-        });
-        const result = {};
-        for (const key in args.select) {
-          if (Object.hasOwnProperty.call(args.select, key)) {
-            result[key] = args.data[key];
-          }
-        }
-        return Promise.resolve(result);
-      }),
-      update: jest.fn().mockImplementation((args) => {
-        const id_subject = args.where?.id_subject;
-        const eraseTargetData = this.#subjectData.filter(
-          (s) => s.id_subject !== id_subject
-        );
-        this.#subjectData = [{ id_subject, ...args.data }, ...eraseTargetData];
-        const result = {};
-        for (const key in args.select) {
-          if (Object.hasOwnProperty.call(args.select, key)) {
-            result[key] = args.data[key];
-          }
-        }
-        return Promise.resolve(result);
-      }),
-    };
-
-    idGenerate = (length) => {
-      let id = "";
-      while (id.length < length) {
-        id += Math.floor(Math.random() * 10);
-      }
-      return id;
-    };
-    $on = () => "not implement while testing";
-  }
-  return {
-    __esModule: true,
-    ...originalModule,
-    PrismaClient: mockPrisma,
-  };
-});
 
 beforeAll(async () => {
-  const bodyRegister = {
-    email: "wirawan@gmail.com",
-    name: "wirawan mahardika",
-    username: "wirawan",
-    password: "wirawan123",
-    age: 19,
-  };
-  const bodyLogin = {
-    email: "wirawan@gmail.com",
-    password: "wirawan123",
-  };
-  await prisma.subject.create({
-    data: {
-      name: "MySQL",
-      topic: "Query",
-    },
-  });
   await req.post("/api/users/register").send(bodyRegister);
   const res = await req.post("/api/users/login").send(bodyLogin);
   token = res.body.data.token;
@@ -208,9 +36,22 @@ beforeAll(async () => {
 });
 
 beforeAll(async () => {
+  await prisma.subject.create({
+    data: {
+      name: "Node.js",
+      topic: "Handle Error",
+      id_subject: "N01001",
+    }
+  })
   const result = await prisma.subject.findMany();
   mockQuestion.id_subject = result[0].id_subject;
 });
+
+afterAll(async() => {
+  await prisma.user.delete({ where: { email: "wirawan@gmail.com" } });
+  await prisma.questions.deleteMany({where: {question: mockQuestion.question}})
+  await prisma.subject.delete({ where: { id_subject: "N01001" } });
+})
 
 describe("POST /api/question", () => {
   test("should reject if user is not logged in", async () => {
@@ -314,7 +155,6 @@ describe("POST /api/question", () => {
 describe("GET /api/question/{id_subject}", () => {
   test("should reject if user is not logged in", async () => {
     const res = await req.get("/api/question/" + mockQuestion.id_subject);
-    console.log(res.body);
 
     expect(res.status).toBe(401);
     expect(res.body).toMatchObject({
@@ -393,3 +233,170 @@ describe("GET /api/question/{id_subject}", () => {
     expect(res.body.data.questions.length).toBeGreaterThan(0);
   });
 });
+
+// jest.mock("@prisma/client", () => {
+//   const originalModule = jest.requireActual("@prisma/client");
+//   class mockPrisma {
+//     #userData = [];
+//     #subjectData = [];
+//     #questionsData = [];
+//     #userScoreData = [];
+//     user = {
+//       findMany: jest.fn().mockImplementation((args) => {
+//         return Promise.resolve(this.#userData);
+//       }),
+//       delete: jest.fn().mockImplementation((arg) => {
+//         return true;
+//       }),
+//       findUnique: jest.fn().mockImplementation((arg) => {
+//         const result = this.#userData.find(
+//           (user) =>
+//             user.email === arg.where?.email ||
+//             user.id_user === arg.where?.id_user
+//         );
+//         return Promise.resolve(result);
+//       }),
+//       count: jest.fn().mockImplementation((args) => {
+//         let count = 0;
+//         this.#userData.forEach((user) => {
+//           if (args.where.email === user.email) {
+//             count++;
+//           }
+//         });
+//         return Promise.resolve(count);
+//       }),
+//       create: jest.fn().mockImplementation((args) => {
+//         args.data.id_user = this.idGenerate(36);
+//         this.#userData.push(args.data);
+//         const result = {};
+//         for (const key in args.select) {
+//           if (Object.hasOwnProperty.call(args.select, key)) {
+//             result[key] = args.data[key];
+//           }
+//         }
+//         return Promise.resolve(result);
+//       }),
+//     };
+//     subject = {
+//       findMany: jest.fn().mockImplementation((args) => {
+//         let result = this.#subjectData;
+//         return Promise.resolve(result);
+//       }),
+//       delete: jest.fn().mockImplementation((arg) => {
+//         return true;
+//       }),
+//       findUnique: jest.fn().mockImplementation((arg) => {
+//         const result = this.#subjectData.find(
+//           (user) =>
+//             user.id_subject === arg.where?.id_subject ||
+//             user.topic === arg.where?.topic
+//         );
+//         return Promise.resolve(result);
+//       }),
+//       count: jest.fn().mockImplementation((args) => {
+//         let count = 0;
+//         this.#subjectData.forEach((request) => {
+//           if (args.where.id_subject === request.id_subject) {
+//             count++;
+//           }
+//         });
+//         return Promise.resolve(count);
+//       }),
+//       create: jest.fn().mockImplementation((args) => {
+//         args.data.id_subject = this.idGenerate(6);
+//         this.#subjectData.push(args.data);
+//         const result = {};
+//         for (const key in args.select) {
+//           if (Object.hasOwnProperty.call(args.select, key)) {
+//             result[key] = args.data[key];
+//           }
+//         }
+//         return Promise.resolve(result);
+//       }),
+//       update: jest.fn().mockImplementation((args) => {
+//         const id_subject = args.where?.id_subject;
+//         const eraseTargetData = this.#subjectData.filter(
+//           (s) => s.id_subject !== id_subject
+//         );
+//         this.#subjectData = [{ id_subject, ...args.data }, ...eraseTargetData];
+//         const result = {};
+//         for (const key in args.select) {
+//           if (Object.hasOwnProperty.call(args.select, key)) {
+//             result[key] = args.data[key];
+//           }
+//         }
+//         return Promise.resolve(result);
+//       }),
+//     };
+//     questions = {
+//       findMany: jest.fn().mockImplementation((args) => {
+//         let result = this.#questionsData;
+//         if (args?.where?.id_subject) {
+//           result = result.filter((s) => {
+//             return s.id_subject === args.where.id_subject;
+//           });
+//         }
+//         return Promise.resolve(result);
+//       }),
+//       findUnique: jest.fn().mockImplementation((arg) => {
+//         const result = this.#subjectData.find(
+//           (user) =>
+//             user.id_subject === arg.where?.id_subject ||
+//             user.topic === arg.where?.topic
+//         );
+//         return Promise.resolve(result);
+//       }),
+//       count: jest.fn().mockImplementation((args) => {
+//         let count = 0;
+//         this.#questionsData.forEach((request) => {
+//           if (args.where.question === request.question) {
+//             count++;
+//           }
+//         });
+//         return Promise.resolve(count);
+//       }),
+//       create: jest.fn().mockImplementation((args) => {
+//         args.data.id_question = this.idGenerate(2);
+//         this.#questionsData.push({
+//           ...args.data,
+//           id_subject: args.data.id_subject,
+//         });
+//         const result = {};
+//         for (const key in args.select) {
+//           if (Object.hasOwnProperty.call(args.select, key)) {
+//             result[key] = args.data[key];
+//           }
+//         }
+//         return Promise.resolve(result);
+//       }),
+//       update: jest.fn().mockImplementation((args) => {
+//         const id_subject = args.where?.id_subject;
+//         const eraseTargetData = this.#subjectData.filter(
+//           (s) => s.id_subject !== id_subject
+//         );
+//         this.#subjectData = [{ id_subject, ...args.data }, ...eraseTargetData];
+//         const result = {};
+//         for (const key in args.select) {
+//           if (Object.hasOwnProperty.call(args.select, key)) {
+//             result[key] = args.data[key];
+//           }
+//         }
+//         return Promise.resolve(result);
+//       }),
+//     };
+
+//     idGenerate = (length) => {
+//       let id = "";
+//       while (id.length < length) {
+//         id += Math.floor(Math.random() * 10);
+//       }
+//       return id;
+//     };
+//     $on = () => "not implement while testing";
+//   }
+//   return {
+//     __esModule: true,
+//     ...originalModule,
+//     PrismaClient: mockPrisma,
+//   };
+// });

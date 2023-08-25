@@ -1,68 +1,20 @@
 import web from "../src/application/web.js";
 import supertest from "supertest";
+import { prisma } from "../src/application/prisma.js";
 
 const req = supertest(web);
 let token, newToken, cookie;
+const body = {
+  email: "wirawan@gmail.com",
+  name: "wirawan mahardika",
+  username: "wirawan",
+  password: "wirawan123",
+  age: 19,
+};
 
-jest.mock("@prisma/client", () => {
-  const originalModule = jest.requireActual("@prisma/client");
-  class mockPrisma {
-    #userData = [];
-    #subjectData = [];
-    #questionsData = [];
-    #userScoreData = [];
-    user = {
-      findMany: jest.fn().mockImplementation((args) => {
-        return Promise.resolve(this.#userData);
-      }),
-      delete: jest.fn().mockImplementation((arg) => {
-        return true;
-      }),
-      findUnique: jest.fn().mockImplementation((arg) => {
-        const result = this.#userData.find(
-          (user) =>
-            user.email === arg.where?.email ||
-            user.id_user === arg.where?.id_user
-        );
-        return Promise.resolve(result);
-      }),
-      count: jest.fn().mockImplementation((args) => {
-        let count = 0;
-        this.#userData.forEach((user) => {
-          if (args.where.email === user.email) {
-            count++;
-          }
-        });
-        return Promise.resolve(count);
-      }),
-      create: jest.fn().mockImplementation((args) => {
-        args.data.id_user = this.idGenerate();
-        this.#userData.push(args.data);
-        const result = {};
-        for (const key in args.select) {
-          if (Object.hasOwnProperty.call(args.select, key)) {
-            result[key] = args.data[key];
-          }
-        }
-        return Promise.resolve(result);
-      }),
-    };
-
-    idGenerate = () => {
-      let id = "";
-      while (id.length < 10) {
-        id += Math.floor(Math.random() * 10);
-      }
-      return id;
-    };
-    $on = () => "not implement while testing";
-  }
-  return {
-    __esModule: true,
-    ...originalModule,
-    PrismaClient: mockPrisma,
-  };
-});
+afterAll(async() => {
+  await prisma.user.delete({where: {email: body.email}})
+})
 
 describe("POST /api/users/register", () => {
   test("should reject if user input is invalid", async () => {
@@ -259,6 +211,50 @@ describe("GET /api/user/refresh-token", () => {
   });
 });
 
+describe("POST /api/user/answer", () => {
+  test("should reject if user is not logged in", async () => {
+    const res = await req.post("/api/user/answer");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toEqual({
+      statusCode: 401,
+      status: "NOT OK",
+      message: "Login is needed",
+      data: null,
+      detail: null,
+    });
+  });
+
+  test("should reject if access token is missing", async () => {
+    const res = await req.post("/api/user/answer").set("Cookie", cookie);
+
+    expect(res.status).toBe(401);
+    expect(res.body).toEqual({
+      statusCode: 401,
+      status: "NOT OK",
+      message: "access denied due to missing or invalid access token",
+      data: null,
+      detail: null,
+    });
+  });
+
+  test("should reject if input is invalid", async () => {
+    const res = await req
+      .post("/api/user/answer")
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + token)
+      .send();
+
+    expect(res.status).toBe(400);
+    expect(res.body).toMatchObject({
+      statusCode: 400,
+      status: "NOT OK",
+      data: null,
+      detail: null,
+    });
+  });
+});
+
 describe("DELETE /api/user/logout", () => {
   test("should reject if user is not logged in", async () => {
     const res = await req.delete("/api/user/logout");
@@ -311,3 +307,63 @@ describe("DELETE /api/user/logout", () => {
     });
   });
 });
+
+// jest.mock("@prisma/client", () => {
+//   const originalModule = jest.requireActual("@prisma/client");
+//   class mockPrisma {
+//     #userData = [];
+//     #subjectData = [];
+//     #questionsData = [];
+//     #userScoreData = [];
+//     user = {
+//       findMany: jest.fn().mockImplementation((args) => {
+//         return Promise.resolve(this.#userData);
+//       }),
+//       delete: jest.fn().mockImplementation((arg) => {
+//         return true;
+//       }),
+//       findUnique: jest.fn().mockImplementation((arg) => {
+//         const result = this.#userData.find(
+//           (user) =>
+//             user.email === arg.where?.email ||
+//             user.id_user === arg.where?.id_user
+//         );
+//         return Promise.resolve(result);
+//       }),
+//       count: jest.fn().mockImplementation((args) => {
+//         let count = 0;
+//         this.#userData.forEach((user) => {
+//           if (args.where.email === user.email) {
+//             count++;
+//           }
+//         });
+//         return Promise.resolve(count);
+//       }),
+//       create: jest.fn().mockImplementation((args) => {
+//         args.data.id_user = this.idGenerate();
+//         this.#userData.push(args.data);
+//         const result = {};
+//         for (const key in args.select) {
+//           if (Object.hasOwnProperty.call(args.select, key)) {
+//             result[key] = args.data[key];
+//           }
+//         }
+//         return Promise.resolve(result);
+//       }),
+//     };
+
+//     idGenerate = () => {
+//       let id = "";
+//       while (id.length < 10) {
+//         id += Math.floor(Math.random() * 10);
+//       }
+//       return id;
+//     };
+//     $on = () => "not implement while testing";
+//   }
+//   return {
+//     __esModule: true,
+//     ...originalModule,
+//     PrismaClient: mockPrisma,
+//   };
+// });

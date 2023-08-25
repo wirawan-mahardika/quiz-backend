@@ -623,21 +623,31 @@
     "/api/user/answer": {
       "post": {
         "tags": ["user"],
-        "summary": "collect user answers",
+        "summary": "get user test result",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "id_question": {
-                      "type": "integer"
-                    },
-                    "answer": {
-                      "type": "string",
-                      "enum": ["a", "b", "c", "d"]
+                "type": "object",
+                "properties": {
+                  "id_subject": {
+                    "type": "string",
+                    "maxLength": 6
+                  },
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id_question": {
+                          "type": "string",
+                          "maxLength": 1
+                        },
+                        "answer": {
+                          "type": "string",
+                          "enum": ["a", "b", "c", "d"]
+                        }
+                      }
                     }
                   }
                 }

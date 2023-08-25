@@ -16,3 +16,13 @@ export const userLoginValidate = Joi.object({
 })
   .required()
   .options({ allowUnknown: false });
+
+export const testResultValidate = Joi.object({
+  id_subject: Joi.string().max(6).required(),
+  data: Joi.object({
+    id_question: Joi.number().max(1).required(),
+    answer: Joi.string().max(1).required(),
+  }).options({ allowUnknown: false }),
+})
+  .required()
+  .options({ allowUnknown: false });

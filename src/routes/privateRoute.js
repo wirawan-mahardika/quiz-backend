@@ -6,6 +6,7 @@ import questionController from "../controller/question-controller.js";
 const privateRoute = express.Router();
 
 privateRoute.delete("/api/user/logout", userController.logout);
+privateRoute.post("/api/user/answer", userController.getUserTestResult);
 
 privateRoute.post("/api/subject", subjectController.createSubjectAndTopic);
 privateRoute.patch("/api/subject", subjectController.updateSubjectAndTopic);

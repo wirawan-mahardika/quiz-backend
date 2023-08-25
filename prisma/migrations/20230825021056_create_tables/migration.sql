@@ -18,6 +18,7 @@ CREATE TABLE `subject` (
     `name` VARCHAR(101) NOT NULL,
     `topic` VARCHAR(101) NOT NULL,
 
+    UNIQUE INDEX `subject_topic_key`(`topic`),
     PRIMARY KEY (`id_subject`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -25,12 +26,13 @@ CREATE TABLE `subject` (
 CREATE TABLE `question` (
     `id_question` INTEGER NOT NULL AUTO_INCREMENT,
     `id_subject` CHAR(6) NOT NULL,
-    `pertanyaan` TEXT NOT NULL,
+    `question` TEXT NOT NULL,
     `a` VARCHAR(101) NOT NULL,
     `b` VARCHAR(101) NOT NULL,
     `c` VARCHAR(101) NOT NULL,
     `d` VARCHAR(101) NOT NULL,
-    `answer` ENUM('a', 'b', 'c', 'd') NOT NULL,
+    `e` VARCHAR(101) NOT NULL,
+    `answer` ENUM('a', 'b', 'c', 'd', 'e') NOT NULL,
 
     PRIMARY KEY (`id_question`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

@@ -86,9 +86,26 @@ const refreshToken = (req, res, next) => {
   }
 };
 
+const getUserTestResult = async (req, res, next) => {
+  try {
+    const result = await userService.getUserTestResult(req.body);
+    res.json({
+      statusCode: 200,
+      status: "OK",
+      message: "Test result accepted",
+      detail: {
+        testResult: result,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   login,
   logout,
   refreshToken,
+  getUserTestResult,
 };
