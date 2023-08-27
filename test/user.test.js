@@ -7,12 +7,21 @@ let token, newToken, cookie;
 let id_subject, id_user_score50, mockQuestionsWithId;
 
 const body = {
-  email: "wirawan@gmail.com",
-  name: "wirawan mahardika",
-  username: "wirawan",
+  email: "wirawanmahardika@gmail.com",
+  name: "mahardika wirawan",
+  username: "wirawanmahardika",
   password: "wirawan123",
   age: 19,
 };
+
+let cookieAdmin, tokenAdmin;
+beforeAll(async () => {
+  const res = await req
+    .post("/api/users/login")
+    .send({ email: "wirawan@gmail.com", password: "wirawan123" });
+  tokenAdmin = res.body.data.token;
+  cookieAdmin = res.headers["set-cookie"];
+});
 
 afterAll(async () => {
   await prisma.user_Score.delete({ where: { id_score: id_user_score50 } });
@@ -64,14 +73,8 @@ describe("POST /api/users/register", () => {
   });
 
   test("should success register", async () => {
-    const body = {
-      email: "wirawan@gmail.com",
-      name: "wirawan mahardika",
-      username: "wirawan",
-      password: "wirawan123",
-      age: 19,
-    };
     const res = await req.post("/api/users/register").send(body);
+
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty("data");
     expect(res.body.data).toHaveProperty("username", body.username);
@@ -85,13 +88,6 @@ describe("POST /api/users/register", () => {
   });
 
   test("should reject if user already registered", async () => {
-    const body = {
-      email: "wirawan@gmail.com",
-      name: "wirawan mahardika",
-      username: "wirawan",
-      password: "wirawan123",
-      age: 19,
-    };
     const res = await req.post("/api/users/register").send(body);
     expect(res.status).toBe(409);
     expect(res.body).toMatchObject({
@@ -118,7 +114,7 @@ describe("POST /api/users/login", () => {
 
   test("should reject if email is not registered", async () => {
     const body = {
-      email: "wirawan@gmail.com",
+      email: "notregistered@gmail.com",
       password: "wirawan123",
     };
     const res = await req
@@ -151,11 +147,11 @@ describe("POST /api/users/login", () => {
   });
 
   test("should success login", async () => {
-    const body = {
-      email: "wirawan@gmail.com",
-      password: "wirawan123",
+    const sendBody = {
+      email: body.email,
+      password: body.password,
     };
-    const res = await req.post("/api/users/login").send(body);
+    const res = await req.post("/api/users/login").send(sendBody);
 
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({
@@ -170,13 +166,13 @@ describe("POST /api/users/login", () => {
   });
 
   test("should reject if user already logged in", async () => {
-    const body = {
-      email: "wirawan@gmail.com",
-      password: "wirawan123",
+    const sendBody = {
+      email: body.email,
+      password: body.password,
     };
     const res = await req
       .post("/api/users/login")
-      .send(body)
+      .send(sendBody)
       .set("Cookie", cookie);
     // .set("Authorization", "Bearer " + token);
 
@@ -270,8 +266,8 @@ describe("POST /api/user/answer", () => {
     const res1 = await req
       .post("/api/subject")
       .send(subjectAndTopicMock)
-      .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token);
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin);
     id_subject = res1.body.data.id_subject;
 
     await prisma.questions.createMany({

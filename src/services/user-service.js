@@ -24,6 +24,7 @@ const register = async (request) => {
 
   const salt = await bcrypt.genSalt(11);
   user.password = await bcrypt.hash(user.password, salt);
+  user.role = "user";
 
   return prisma.user.create({
     data: user,

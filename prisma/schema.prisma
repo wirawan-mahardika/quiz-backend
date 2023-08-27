@@ -17,10 +17,16 @@ model User {
   email String @db.VarChar(51) @unique
   name String @db.VarChar(201)
   password String
+  role Role
 
   user_score User_Score[]
 
   @@map("user")
+}
+
+enum Role {
+  admin
+  user
 }
 
 model Subject {

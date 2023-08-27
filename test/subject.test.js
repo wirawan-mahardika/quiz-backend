@@ -3,40 +3,28 @@ import web from "../src/application/web.js";
 import supertest from "supertest";
 
 const req = supertest(web);
-let token, cookie;
 const subjectAndTopicMock = {
   name: "Node.js",
   topic: "Handle Error",
   id_subject: "N01001",
 };
 
-
-
+let cookieAdmin, tokenAdmin;
 beforeAll(async () => {
-  const bodyRegister = {
-    email: "wirawan@gmail.com",
-    name: "wirawan mahardika",
-    username: "wirawan",
-    password: "wirawan123",
-    age: 19,
-  };
-  const bodyLogin = {
-    email: "wirawan@gmail.com",
-    password: "wirawan123",
-  };
-  await req.post("/api/users/register").send(bodyRegister);
-  const res = await req.post("/api/users/login").send(bodyLogin);
-  token = res.body.data.token;
-  cookie = res.headers["set-cookie"];
+  const res = await req
+    .post("/api/users/login")
+    .send({ email: "wirawan@gmail.com", password: "wirawan123" });
+  tokenAdmin = res.body.data.token;
+  cookieAdmin = res.headers["set-cookie"];
 });
 
-afterAll(async() => {
-  await prisma.user.delete({ where: { email: "wirawan@gmail.com" } });
-  await prisma.subject.delete({ where: { id_subject: subjectAndTopicMock.id_subject } });
+afterAll(async () => {
+  await prisma.subject.delete({
+    where: { id_subject: subjectAndTopicMock.id_subject },
+  });
+});
 
-})
-
-describe("POST /api/subject", () => {
+describe("POST /api/subject (admin)", () => {
   test("should reject if user is not logged in", async () => {
     const res = await req.post("/api/subject");
     //   .set("Authorization", "Bearer " + token);
@@ -50,7 +38,7 @@ describe("POST /api/subject", () => {
   });
 
   test("should reject if token is missing or invalid", async () => {
-    const res = await req.post("/api/subject").set("Cookie", cookie);
+    const res = await req.post("/api/subject").set("Cookie", cookieAdmin);
     //   .set("Authorization", "Bearer " + token);
 
     expect(res.status).toBe(401);
@@ -64,8 +52,8 @@ describe("POST /api/subject", () => {
   test("should reject if user inputs is invalid", async () => {
     const res = await req
       .post("/api/subject")
-      .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token);
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin);
 
     expect(res.status).toBe(400);
     expect(res.body).toMatchObject({
@@ -80,8 +68,8 @@ describe("POST /api/subject", () => {
     const res = await req
       .post("/api/subject")
       .send(subjectAndTopicMock)
-      .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token);
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin);
 
     expect(res.status).toBe(201);
     expect(res.body).toMatchObject({
@@ -100,8 +88,8 @@ describe("POST /api/subject", () => {
     const res = await req
       .post("/api/subject")
       .send(subjectAndTopicMock)
-      .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token);
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin);
 
     expect(res.status).toBe(409);
     expect(res.body).toMatchObject({
@@ -112,7 +100,7 @@ describe("POST /api/subject", () => {
   });
 });
 
-describe("PATCH /api/subject", () => {
+describe("PATCH /api/subject (admin)", () => {
   test("should reject if user is not logged in", async () => {
     const res = await req.patch("/api/subject");
     //   .set("Authorization", "Bearer " + token);
@@ -126,7 +114,7 @@ describe("PATCH /api/subject", () => {
   });
 
   test("should reject if token is missing or invalid", async () => {
-    const res = await req.patch("/api/subject").set("Cookie", cookie);
+    const res = await req.patch("/api/subject").set("Cookie", cookieAdmin);
     //   .set("Authorization", "Bearer " + token);
 
     expect(res.status).toBe(401);
@@ -140,8 +128,8 @@ describe("PATCH /api/subject", () => {
   test("should reject if user input is invalid", async () => {
     const res = await req
       .patch("/api/subject")
-      .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token);
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin);
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("message");
@@ -155,8 +143,8 @@ describe("PATCH /api/subject", () => {
     const res = await req
       .patch("/api/subject")
       .send(subjectAndTopicMock)
-      .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token);
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin);
 
     expect(res.status).toBe(409);
     expect(res.body).toMatchObject({
@@ -174,8 +162,8 @@ describe("PATCH /api/subject", () => {
         name: "Python",
         topic: "Function",
       })
-      .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token);
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin);
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({

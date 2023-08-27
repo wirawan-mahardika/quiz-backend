@@ -10,9 +10,9 @@ privateRoute.delete("/api/user/logout", userController.logout);
 privateRoute.post("/api/user/answer", userController.getUserTestResult);
 privateRoute.get("/api/user/scores",userController.getUserScore);
 
-privateRoute.post("/api/subject", subjectController.createSubjectAndTopic);
-privateRoute.patch("/api/subject", subjectController.updateSubjectAndTopic);
-privateRoute.post("/api/question", questionController.createQuestion);
+// privateRoute.post("/api/subject", subjectController.createSubjectAndTopic);
+// privateRoute.patch("/api/subject", subjectController.updateSubjectAndTopic);
+// privateRoute.post("/api/question", questionController.createQuestion);
 privateRoute.get("/api/question/:id_subject", questionController.getQuestion);
 
 export default privateRoute;

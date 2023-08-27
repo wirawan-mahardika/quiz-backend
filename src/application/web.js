@@ -14,6 +14,8 @@ import { passportAuthMiddleware } from "../middleware/passportMiddlewares.js";
 import { jwtAuthMiddleware } from "../middleware/jwtMiddleware.js";
 import dotenv from "dotenv";
 import privateRoute from "../routes/privateRoute.js";
+import adminRoute from "../routes/adminRoute.js";
+import { adminAuthMiddleware } from "../middleware/adminAuthMiddleware.js";
 
 dotenv.config();
 const web = express();
@@ -29,8 +31,10 @@ web.use(passport.session());
 intializePassport(passport);
 
 web.use(publicRoute);
-web.use(passportAuthMiddleware, jwtAuthMiddleware); 
+web.use(passportAuthMiddleware, jwtAuthMiddleware);
 web.use(privateRoute);
+web.use(adminAuthMiddleware);
+web.use(adminRoute);
 web.use(errorMiddleware)
 
 export default web

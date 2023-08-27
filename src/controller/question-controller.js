@@ -1,4 +1,4 @@
-import questionService from "../services/question-service";
+import questionService from "../services/question-service.js";
 
 const createQuestion = async (req, res, next) => {
   try {

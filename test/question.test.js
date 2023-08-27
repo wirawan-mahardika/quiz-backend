@@ -16,17 +16,25 @@ const mockQuestion = {
   answer: "a",
 };
 const bodyRegister = {
-  email: "wirawan@gmail.com",
+  email: "wirawanmahardika@gmail.com",
   name: "wirawan mahardika",
-  username: "wirawan",
+  username: "mahardika",
   password: "wirawan123",
   age: 19,
 };
 const bodyLogin = {
-  email: "wirawan@gmail.com",
+  email: "wirawanmahardika@gmail.com",
   password: "wirawan123",
 };
 
+let cookieAdmin, tokenAdmin;
+beforeAll(async () => {
+  const res = await req
+    .post("/api/users/login")
+    .send({ email: "wirawan@gmail.com", password: "wirawan123" });
+  tokenAdmin = res.body.data.token;
+  cookieAdmin = res.headers["set-cookie"];
+});
 
 beforeAll(async () => {
   await req.post("/api/users/register").send(bodyRegister);
@@ -41,19 +49,21 @@ beforeAll(async () => {
       name: "Node.js",
       topic: "Handle Error",
       id_subject: "N01001",
-    }
-  })
+    },
+  });
   const result = await prisma.subject.findMany();
   mockQuestion.id_subject = result[0].id_subject;
 });
 
-afterAll(async() => {
-  await prisma.user.delete({ where: { email: "wirawan@gmail.com" } });
-  await prisma.questions.deleteMany({where: {question: mockQuestion.question}})
+afterAll(async () => {
+  await prisma.user.delete({ where: { email: "wirawanmahardika@gmail.com" } });
+  await prisma.questions.deleteMany({
+    where: { question: mockQuestion.question },
+  });
   await prisma.subject.delete({ where: { id_subject: "N01001" } });
-})
+});
 
-describe("POST /api/question", () => {
+describe("POST /api/question (admin)", () => {
   test("should reject if user is not logged in", async () => {
     const res = await req.post("/api/question").send(mockQuestion);
 
@@ -72,7 +82,7 @@ describe("POST /api/question", () => {
     const res = await req
       .post("/api/question")
       .send(mockQuestion)
-      .set("Cookie", cookie);
+      .set("Cookie", cookieAdmin);
 
     expect(res.status).toBe(401);
     expect(res.body).toMatchObject({
@@ -84,11 +94,26 @@ describe("POST /api/question", () => {
     });
   });
 
+  test("should reject if user role is not admin", async () => {
+    const res = await req
+      .post("/api/question")
+      .send(mockQuestion)
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + token);
+
+    expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({
+      statusCode: 401,
+      status: "NOT OK",
+      message: "Access denied",
+    });
+  });
+
   test("should reject if input is invalid", async () => {
     const res = await req
       .post("/api/question")
-      .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token)
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin)
       .send();
 
     expect(res.status).toBe(400);
@@ -105,8 +130,8 @@ describe("POST /api/question", () => {
   test("should reject if subject is not exist", async () => {
     const res = await req
       .post("/api/question")
-      .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token)
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin)
       .send({ ...mockQuestion, id_subject: "w12345" });
 
     expect(res.status).toBe(404);
@@ -122,8 +147,8 @@ describe("POST /api/question", () => {
   test("should success create new question", async () => {
     const res = await req
       .post("/api/question")
-      .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token)
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin)
       .send(mockQuestion);
 
     expect(res.status).toBe(201);
@@ -137,8 +162,8 @@ describe("POST /api/question", () => {
   test("should reject if question is already exist", async () => {
     const res = await req
       .post("/api/question")
-      .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token)
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin)
       .send(mockQuestion);
 
     expect(res.status).toBe(409);

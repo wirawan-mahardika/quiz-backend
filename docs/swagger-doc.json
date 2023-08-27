@@ -472,7 +472,7 @@
     },
     "/api/question/{id_subject}": {
       "get": {
-        "tags": ["subject"],
+        "tags": ["question"],
         "summary": "get all questions",
         "description": "get all questions based on topics",
         "parameters": [
@@ -741,6 +741,73 @@
           },
           "401": {
             "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    },
+    "/api/admin/create-subject-topic": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "create subject and topic",
+        "description": "create new subject or topic in the database",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "subject": {
+                      "type": "string"
+                    },
+                    "topic": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "success create new subject and/or topic",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 201,
+                  "status": "OK",
+                  "message": "succesfully create new subject and/or topic",
+                  "detail": {
+                    "subject": "Chemistry",
+                    "topic": "Atom Structure"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "409": {
+            "description": "entitry already exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 409,
+                  "status": "NOT OK",
+                  "message": "Topic already exist"
+                }
+              }
+            }
           }
         }
       }

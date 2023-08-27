@@ -23,7 +23,10 @@ export function intializePassport(passport) {
       },
       true
     );
-    done(null, { id_user: user.id_user, refreshToken: refreshToken });
+    done(null, {
+      id_user: user.id_user,
+      refreshToken: refreshToken,
+    });
   });
   passport.deserializeUser(async (user, done) => {
     const userData = await prisma.user.findUnique({
