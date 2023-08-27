@@ -4,6 +4,8 @@ import { prisma } from "../src/application/prisma.js";
 
 const req = supertest(web);
 let token, newToken, cookie;
+let id_subject, id_user_score50, mockQuestionsWithId;
+
 const body = {
   email: "wirawan@gmail.com",
   name: "wirawan mahardika",
@@ -12,9 +14,14 @@ const body = {
   age: 19,
 };
 
-afterAll(async() => {
-  await prisma.user.delete({where: {email: body.email}})
-})
+afterAll(async () => {
+  await prisma.user_Score.delete({ where: { id_score: id_user_score50 } });
+  await prisma.questions.deleteMany({
+    where: { question: { contains: "(WILL DELETE)" } },
+  });
+  await prisma.subject.delete({ where: { id_subject: id_subject } });
+  await prisma.user.delete({ where: { email: body.email } });
+});
 
 describe("POST /api/users/register", () => {
   test("should reject if user input is invalid", async () => {
@@ -212,6 +219,73 @@ describe("GET /api/user/refresh-token", () => {
 });
 
 describe("POST /api/user/answer", () => {
+  const subjectAndTopicMock = {
+    name: "Node.js",
+    topic: "Handle Error",
+    id_subject: "N01001",
+  };
+  const mockQuestions = [
+    {
+      id_subject: "N01001",
+      question: "(WILL DELETE)this is question",
+      a: "this is a",
+      b: "this is b",
+      c: "this is c",
+      d: "this is d",
+      e: "this is e",
+      answer: "a",
+    },
+    {
+      id_subject: "N01001",
+      question: "(WILL DELETE)this is question2",
+      a: "this is a",
+      b: "this is b",
+      c: "this is c",
+      d: "this is d",
+      e: "this is e",
+      answer: "a",
+    },
+    {
+      id_subject: "N01001",
+      question: "(WILL DELETE)this is question3",
+      a: "this is a",
+      b: "this is b",
+      c: "this is c",
+      d: "this is d",
+      e: "this is e",
+      answer: "a",
+    },
+    {
+      id_subject: "N01001",
+      question: "(WILL DELETE)this is question4",
+      a: "this is a",
+      b: "this is b",
+      c: "this is c",
+      d: "this is d",
+      e: "this is e",
+      answer: "a",
+    },
+  ];
+  beforeAll(async () => {
+    const res1 = await req
+      .post("/api/subject")
+      .send(subjectAndTopicMock)
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + token);
+    id_subject = res1.body.data.id_subject;
+
+    await prisma.questions.createMany({
+      data: mockQuestions,
+    });
+    const questions = await prisma.questions.findMany();
+    mockQuestionsWithId = questions.map((q, i) => {
+      if (i === 0 || i === 1) {
+        return { id_question: q.id_question, answer: "b" };
+      }
+      return { id_question: q.id_question, answer: q.answer };
+    });
+  });
+
   test("should reject if user is not logged in", async () => {
     const res = await req.post("/api/user/answer");
 
@@ -252,6 +326,122 @@ describe("POST /api/user/answer", () => {
       data: null,
       detail: null,
     });
+  });
+
+  test("should success get test result and make score 50", async () => {
+    const res = await req
+      .post("/api/user/answer")
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + token)
+      .send({
+        id_subject: id_subject,
+        data: mockQuestionsWithId,
+      });
+
+    id_user_score50 = res.body.detail.testResult.id_score;
+    expect(res.body).toMatchObject({
+      statusCode: 200,
+      status: "OK",
+      message: "Test result accepted",
+    });
+    expect(res.body).toHaveProperty("detail");
+    expect(res.body.detail).toHaveProperty("testResult");
+    expect(res.body.detail.testResult.score).toBe(50);
+  });
+});
+
+describe("GET /api/user/scores", () => {
+  test("should reject if user is not logged in", async () => {
+    const res = await req.delete("/api/user/scores");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({
+      statusCode: 401,
+      status: "NOT OK",
+      message: "Login is needed",
+    });
+  });
+
+  test("should reject if token jwt is missing", async () => {
+    const res = await req.delete("/api/user/scores").set("Cookie", cookie);
+
+    expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({
+      statusCode: 401,
+      status: "NOT OK",
+      message: "access denied due to missing or invalid access token",
+    });
+  });
+
+  test("should success get all scores", async () => {
+    const res = await req
+      .get("/api/user/scores")
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + token);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      statusCode: 200,
+      status: "OK",
+      message: "success get user scores",
+    });
+    expect(res.body).toHaveProperty("data");
+    expect(res.body.data.length).toBeGreaterThan(0);
+  });
+
+  test("should success get scores based on subject", async () => {
+    const res = await req
+      .get("/api/user/scores")
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + token)
+      .query({ subject: "node" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      statusCode: 200,
+      status: "OK",
+      message: "success get user scores",
+    });
+    expect(res.body).toHaveProperty("data");
+    expect(res.body.data.length).toBeGreaterThan(0);
+    expect(res.body.data[0].subject.toLowerCase()).toMatch(/node/);
+  });
+
+  test("should success get scores based on topic", async () => {
+    const res = await req
+      .get("/api/user/scores")
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + token)
+      .query({ topic: "Handle" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      statusCode: 200,
+      status: "OK",
+      message: "success get user scores",
+    });
+    expect(res.body).toHaveProperty("data");
+    expect(res.body.data.length).toBeGreaterThan(0);
+    expect(res.body.data[0].topic.toLowerCase()).toMatch(/handle/);
+  });
+
+  test("should success get scores based on subject and topic", async () => {
+    const res = await req
+      .get("/api/user/scores")
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + token)
+      .query({ subject: "node", topic: "Handle" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      statusCode: 200,
+      status: "OK",
+      message: "success get user scores",
+    });
+    expect(res.body).toHaveProperty("data");
+    expect(res.body.data.length).toBeGreaterThan(0);
+    expect(res.body.data[0].topic.toLowerCase()).toMatch(/handle/);
+    expect(res.body.data[0].subject.toLowerCase()).toMatch(/node/);
   });
 });
 

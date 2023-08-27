@@ -2,11 +2,12 @@ import questionService from "../services/question-service";
 
 const createQuestion = async (req, res, next) => {
   try {
-    await questionService.createQuestion(req.body);
+    const data = await questionService.createQuestion(req.body);
     res.status(201).json({
       statusCode: 201,
       status: "OK",
       message: "Question successfully created",
+      data: data,
     });
   } catch (error) {
     next(error);

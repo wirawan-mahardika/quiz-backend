@@ -29,8 +29,7 @@ web.use(passport.session());
 intializePassport(passport);
 
 web.use(publicRoute);
-web.use(passportAuthMiddleware);
-web.use(jwtAuthMiddleware);
+web.use(passportAuthMiddleware, jwtAuthMiddleware); 
 web.use(privateRoute);
 web.use(errorMiddleware)
 

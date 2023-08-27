@@ -9,6 +9,10 @@ import { ResponseError } from "../error/ResponseError.js";
 import bcrypt from "bcrypt";
 import { passwordStrengthTest } from "../utils/passStrengthCheck.js";
 import { generateTokenWithRefreshToken } from "../utils/jwt.js";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone.js";
+
+dayjs.extend(timezone);
 
 const register = async (request) => {
   const user = validate(userRegisterValidate, request);
@@ -40,23 +44,61 @@ const refreshToken = (token) => {
   return accessToken;
 };
 
-const getUserTestResult = async (requestBody) => {
+const getUserTestResult = async (requestBody, id_user) => {
   const result = validate(testResultValidate, requestBody);
   const { id_subject, data } = result;
 
   const questions = await prisma.questions.findMany({
     where: { id_subject },
   });
+
   const gradeTemp = data.map((q) => {
     const questionFromDb = questions.find(
       (d) => d.id_question === q.id_question
     );
-    if (q.answer === questionFromDb.answer) return 1;
+    if (questionFromDb && q.answer === questionFromDb.answer) return 1;
     return 0;
   });
 
-  const gradeResult = gradeTemp.reduce(a, (b) => a + b, 0) / data.length;
-  return gradeResult;
+  const gradeResult =
+    (gradeTemp.reduce((a, b) => a + b, 0) * 100) / questions.length;
+
+  const { score, id_score } = await prisma.user_Score.create({
+    data: {
+      id_user: id_user,
+      id_subject: id_subject,
+      score: gradeResult,
+      createdAt: dayjs().toISOString(),
+    },
+  });
+  return { score, id_score };
+};
+
+const getUserScores = async (id_user, subject, topic) => {
+  return prisma.user_Score.findMany({
+    where: {
+      id_user: id_user,
+      subject: {
+        name: {
+          contains: subject,
+        },
+        topic: {
+          contains: topic,
+        },
+      },
+    },
+    select: {
+      id_score: true,
+      score: true,
+      createdAt: true,
+      subject: {
+        select: {
+          name: true,
+          topic: true,
+        },
+      },
+    },
+  });
 };
 
 export default {
@@ -64,4 +106,5 @@ export default {
   login,
   refreshToken,
   getUserTestResult,
+  getUserScores,
 };

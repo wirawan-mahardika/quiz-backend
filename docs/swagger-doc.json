@@ -666,7 +666,13 @@
                 "example": {
                   "statusCode": 200,
                   "status": "OK",
-                  "message": "the test result you submitted has been accepted"
+                  "message": "Test result accepted",
+                  "detail": {
+                    "testResult": {
+                      "id_score": 12,
+                      "score": 100
+                    }
+                  }
                 }
               }
             }
@@ -680,20 +686,12 @@
         }
       }
     },
-    "/api/user/{id_user}/check-scores": {
+    "/api/user/scores": {
       "get": {
         "tags": ["user"],
         "summary": "get all user scores",
         "description": "get all scores by default",
         "parameters": [
-          {
-            "name": "id_user",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "subject",
             "in": "query",
@@ -722,24 +720,27 @@
                 "example": {
                   "statusCode": 200,
                   "status": "OK",
-                  "message": "success get scores",
+                  "message": "success get user scores",
                   "datas": [
                     {
                       "subject": "Physics",
                       "topic": "Thermodynamics",
-                      "rate": 90,
-                      "accept-date": "2008-05-04"
+                      "score": 90,
+                      "createdAt": "2008-05-04"
                     },
                     {
                       "subject": "Chemistry",
                       "topic": "Atom Structure",
-                      "rate": 89,
-                      "accept-date": "2008-05-22"
+                      "score": 89,
+                      "createdAt": "2008-05-22"
                     }
                   ]
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
           }
         }
       }

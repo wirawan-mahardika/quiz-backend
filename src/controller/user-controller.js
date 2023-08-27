@@ -1,6 +1,7 @@
 import passport from 'passport'
 import userService from '../services/user-service.js'
 import { createJwtToken } from "../utils/jwt.js";
+import dayjs from "dayjs";
 
 const register = async (req, res, next) => {
   try {
@@ -88,7 +89,10 @@ const refreshToken = (req, res, next) => {
 
 const getUserTestResult = async (req, res, next) => {
   try {
-    const result = await userService.getUserTestResult(req.body);
+    const result = await userService.getUserTestResult(
+      req.body,
+      req.user.id_user
+    );
     res.json({
       statusCode: 200,
       status: "OK",
@@ -102,10 +106,35 @@ const getUserTestResult = async (req, res, next) => {
   }
 };
 
+const getUserScore = async (req, res, next) => {
+  try {
+    const result = await userService.getUserScores(
+      req.user.id_user,
+      req.query.subject
+    );
+    res.json({
+      statusCode: 200,
+      status: "OK",
+      message: "success get user scores",
+      data: result.map((d) => {
+        return {
+          ...d,
+          subject: d.subject.name,
+          topic: d.subject.topic,
+          createdAt: dayjs(d.createdAt).format("DD-MM-YYYY HH:mm"),
+        };
+      }),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   login,
   logout,
   refreshToken,
   getUserTestResult,
+  getUserScore,
 };
