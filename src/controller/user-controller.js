@@ -3,6 +3,7 @@ import userService from '../services/user-service.js'
 import { createJwtToken } from "../utils/jwt.js";
 import { prisma } from "../application/prisma.js";
 import dayjs from "dayjs";
+import { logger } from "../application/logger.js";
 
 const register = async (req, res, next) => {
   try {
@@ -25,6 +26,11 @@ const login = async (req, res, next) => {
     userService.login(req.body);
     passport.authenticate("local", (err, user) => {
       if (err) {
+        logger.warn({
+          statusCode: 401,
+          status: "NOT OK",
+          message: err,
+        });
         return res
           .status(401)
           .json({

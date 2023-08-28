@@ -60,6 +60,7 @@ afterAll(async () => {
   await prisma.questions.deleteMany({
     where: { question: mockQuestion.question },
   });
+  await prisma.questions.deleteMany({ where: { id_subject: "N01001" } });
   await prisma.subject.delete({ where: { id_subject: "N01001" } });
 });
 
@@ -256,6 +257,87 @@ describe("GET /api/question/{id_subject}", () => {
     });
     expect(res.body).toHaveProperty("data");
     expect(res.body.data.questions.length).toBeGreaterThan(0);
+  });
+});
+
+describe("POST /api/questions", () => {
+  test("should reject if user is not logged in", async () => {
+    const res = await req.post("/api/questions");
+
+    expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({
+      statusCode: 401,
+      status: "NOT OK",
+      message: "Login is needed",
+      data: null,
+      detail: null,
+    });
+    expect(res.body).toHaveProperty("message");
+  });
+
+  test("should reject if token is missing or invalid", async () => {
+    const res = await req
+      .post("/api/questions")
+      .send(mockQuestion)
+      .set("Cookie", cookieAdmin);
+
+    expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({
+      statusCode: 401,
+      status: "NOT OK",
+      message: "access denied due to missing or invalid access token",
+      data: null,
+      detail: null,
+    });
+  });
+
+  test("should reject if user role is not admin", async () => {
+    const res = await req
+      .post("/api/questions")
+      .send(mockQuestion)
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + token);
+
+    expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({
+      statusCode: 401,
+      status: "NOT OK",
+      message: "Access denied",
+    });
+  });
+
+  test("should reject if input is invalid", async () => {
+    const res = await req
+      .post("/api/questions")
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin)
+      .field("id_subject", "N01001")
+      .attach("datas", __dirname + "/file/invalid-file.json");
+    expect(res.status).toBe(400);
+    expect(res.body).toMatchObject({
+      statusCode: 400,
+      status: "NOT OK",
+      data: null,
+      detail: null,
+    });
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toMatch(/required/);
+  });
+
+  test("should success create many questions", async () => {
+    const res = await req
+      .post("/api/questions")
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin)
+      .field("id_subject", mockQuestion.id_subject)
+      .attach("datas", __dirname + "/file/file.json");
+
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({
+      statusCode: 201,
+      status: "OK",
+      message: "success create 2 question",
+    });
   });
 });
 

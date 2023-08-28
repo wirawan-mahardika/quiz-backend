@@ -2,6 +2,7 @@ import { validate } from "../validation/validate.js";
 import { prisma } from "../application/prisma.js";
 import { ResponseError } from "../error/ResponseError.js";
 import {
+  createManyQuestionSchema,
   createQuestionSchema,
   getQuestionSchema,
 } from "../validation/question-validate.js";
@@ -46,7 +47,22 @@ const getQuestion = async (params) => {
   return question;
 };
 
+const createManyQuestion = async (requestBody, file) => {
+  if (file.mimetype !== "application/json") {
+    throw new ResponseError(400, "File extension is not valid");
+  }
+  const datas = JSON.parse(file.buffer);
+  const id_subject = requestBody.id_subject;
+  const result = validate(createManyQuestionSchema, { datas, id_subject });
+  return prisma.questions.createMany({
+    data: result.datas.map((q) => {
+      return { ...q, id_subject: id_subject };
+    }),
+  });
+};
+
 export default {
   createQuestion,
   getQuestion,
+  createManyQuestion,
 };

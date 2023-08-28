@@ -267,7 +267,7 @@
     },
     "/api/subject": {
       "post": {
-        "tags": ["subject"],
+        "tags": ["subject", "admin"],
         "summary": "create subject and topic",
         "description": "create subject and topic to the database",
         "parameters": [
@@ -328,7 +328,7 @@
         }
       },
       "patch": {
-        "tags": ["subject"],
+        "tags": ["subject", "admin"],
         "summary": "update subject",
         "description": "update subject and topic in the database",
         "parameters": [
@@ -616,6 +616,79 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/questions": {
+      "post": {
+        "tags": ["admin", "question"],
+        "summary": "create many questions",
+        "description": "create many questions using json or csv file",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_subject": {
+                    "type": "string"
+                  },
+                  "datas": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "question": {
+                          "type": "string"
+                        },
+                        "a": {
+                          "type": "string"
+                        },
+                        "b": {
+                          "type": "string"
+                        },
+                        "c": {
+                          "type": "string"
+                        },
+                        "d": {
+                          "type": "string"
+                        },
+                        "e": {
+                          "type": "string"
+                        },
+                        "answer": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "success create all datas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/response"
+                },
+                "example": {
+                  "statusCode": 201,
+                  "status": "OK",
+                  "message": "success create {number} datas",
+                  "detail": {
+                    "countData": 10
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
           }
         }
       }
