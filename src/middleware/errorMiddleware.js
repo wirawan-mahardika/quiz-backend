@@ -1,3 +1,4 @@
+import { logger } from "../application/logger.js";
 import { ResponseError } from "../error/ResponseError.js";
 
 export function errorMiddleware(err, req, res, next) {
@@ -5,6 +6,7 @@ export function errorMiddleware(err, req, res, next) {
     return next();
   }
   if (err instanceof ResponseError) {
+    logger.warn({ ...err, message: err.message });
     return res.status(err.statusCode).json({
       statusCode: err.statusCode,
       status: err.status,
@@ -13,7 +15,7 @@ export function errorMiddleware(err, req, res, next) {
       detail: err.detail,
     });
   } else {
-    console.log(err);
+    logger.error(err);
     return res.status(500).json({
       statusCode: 500,
       status: "NOT OK",

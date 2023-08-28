@@ -1,0 +1,33 @@
+{"data":null,"detail":null,"level":"warn","message":"\"email\" must be a valid email. \"age\" is required. \"username\" length must be at least 6 characters long. \"name\" length must be at least 6 characters long","status":"NOT OK","statusCode":400}
+{"data":null,"detail":{"suggestions":["Add another word or two. Uncommon words are better.","Use a longer keyboard pattern with more turns"],"warning":"Straight rows of keys are easy to guess"},"level":"warn","message":"weak password","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"email already registered","status":"NOT OK","statusCode":409}
+{"data":null,"detail":null,"level":"warn","message":"\"email\" must be a valid email. \"password\" is not allowed to be empty","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"You're already logged in","status":"NOT OK","statusCode":403}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"\"id_subject\" is required","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Access denied","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"\"id_subject\" is required. \"question\" is required. \"a\" is required. \"b\" is required. \"c\" is required. \"d\" is required. \"e\" is required. \"answer\" is required","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"Subject or topic is not exist","status":"NOT OK","statusCode":404}
+{"data":null,"detail":null,"level":"warn","message":"Question is already exist","status":"NOT OK","statusCode":409}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"\"id_subject\" length must be less than or equal to 100 characters long","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"Question is not exist","status":"NOT OK","statusCode":404}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"\"id_subject\" is required. \"name\" is required. \"topic\" is required","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"Conflict entity, topic is already exist","status":"NOT OK","statusCode":409}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"\"id_subject\" is required. \"name\" is required. \"topic\" is required","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"Conflict entity, topic is already exist","status":"NOT OK","statusCode":409}
+{"data":null,"detail":null,"level":"warn","message":"Topic sdlfhjalsk is not found","status":"NOT OK","statusCode":404}

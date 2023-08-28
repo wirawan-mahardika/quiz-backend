@@ -1,3 +1,4 @@
+import { prisma } from "../application/prisma.js";
 import questionService from "../services/question-service.js";
 
 const createQuestion = async (req, res, next) => {
@@ -11,6 +12,8 @@ const createQuestion = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -27,6 +30,8 @@ const getQuestion = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 

@@ -1,6 +1,6 @@
 import { ResponseError } from "../error/ResponseError.js";
 import subjectService from "../services/subject-service.js";
-
+import { prisma } from "../application/prisma.js";
 const createSubjectAndTopic = async (req, res, next) => {
   try {
     const result = await subjectService.createSubjectAndTopic(req.body);
@@ -12,6 +12,8 @@ const createSubjectAndTopic = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -26,6 +28,8 @@ const updateSubjectAndTopic = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -43,6 +47,8 @@ const getSubjectsAndTopics = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 

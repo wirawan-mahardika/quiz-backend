@@ -1,6 +1,7 @@
 import passport from 'passport'
 import userService from '../services/user-service.js'
 import { createJwtToken } from "../utils/jwt.js";
+import { prisma } from "../application/prisma.js";
 import dayjs from "dayjs";
 
 const register = async (req, res, next) => {
@@ -14,10 +15,12 @@ const register = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
   try {
     userService.login(req.body);
     passport.authenticate("local", (err, user) => {
@@ -50,6 +53,8 @@ const login = (req, res, next) => {
     })(req, res, next);
   } catch (error) {
     next(error);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -70,7 +75,7 @@ const logout = (req, res, next) => {
   });
 };
 
-const refreshToken = (req, res, next) => {
+const refreshToken = async (req, res, next) => {
   try {
     const refreshToken = req.session.passport.user.refreshToken;
     const token = userService.refreshToken(refreshToken);
@@ -84,6 +89,8 @@ const refreshToken = (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -103,6 +110,8 @@ const getUserTestResult = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
@@ -127,6 +136,8 @@ const getUserScore = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  } finally {
+    await prisma.$disconnect();
   }
 };
 
