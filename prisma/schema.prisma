@@ -35,7 +35,7 @@ model Subject {
   topic String @db.VarChar(101) @unique
 
   question Questions[]
-  user_score User_Score?
+  user_score User_Score[]
 
   @@map("subject")
 }
@@ -66,7 +66,7 @@ enum Answer {
 
 model User_Score {
   id_score Int @id @default(autoincrement())
-  id_subject String @db.Char(6) @unique
+  id_subject String @db.Char(6)
   id_user String @db.Char(36)
   score Int
   createdAt DateTime @db.Timestamp()

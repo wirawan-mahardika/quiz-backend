@@ -1,0 +1,11 @@
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"PRIMARY"},"name":"PrismaClientKnownRequestError"}
+{"level":"error"}
+{"level":"error"}
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"user_score_id_subject_key"},"name":"PrismaClientKnownRequestError"}
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"user_score_id_subject_key"},"name":"PrismaClientKnownRequestError"}
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"user_score_id_subject_key"},"name":"PrismaClientKnownRequestError"}
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"user_score_id_subject_key"},"name":"PrismaClientKnownRequestError"}
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"user_score_id_subject_key"},"name":"PrismaClientKnownRequestError"}
+{"level":"error","message":"failed to deserialize user, something went wrong"}
+{"level":"error","message":"failed to deserialize user, something went wrong"}
+{"level":"error","message":"failed to deserialize user, something went wrong"}

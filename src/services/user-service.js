@@ -49,6 +49,13 @@ const getUserTestResult = async (requestBody, id_user) => {
   const result = validate(testResultValidate, requestBody);
   const { id_subject, data } = result;
 
+  const countUser = await prisma.user_Score.count({
+    where: { id_user, id_subject },
+  });
+  if (countUser > 0) {
+    throw new ResponseError(409, "Questions already answered");
+  }
+  
   const questions = await prisma.questions.findMany({
     where: { id_subject },
   });

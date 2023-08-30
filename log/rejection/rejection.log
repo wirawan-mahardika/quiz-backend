@@ -384,3 +384,81 @@
 {"data":null,"detail":null,"level":"warn","message":"\"id_subject\" is required. \"name\" is required. \"topic\" is required","status":"NOT OK","statusCode":400}
 {"data":null,"detail":null,"level":"warn","message":"Conflict entity, topic is already exist","status":"NOT OK","statusCode":409}
 {"data":null,"detail":null,"level":"warn","message":"Topic sdlfhjalsk is not found","status":"NOT OK","statusCode":404}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"\"id_subject\" is required","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"PRIMARY"},"name":"PrismaClientKnownRequestError"}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"level":"error"}
+{"level":"error"}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"File is needed","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"File is needed","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"\"datas[0].e\" is required. \"datas[1].e\" is required. \"datas[2].e\" is required. \"datas[3].e\" is required. \"datas[4].e\" is required. \"datas[5].e\" is required. \"datas[6].e\" is required. \"datas[7].e\" is required. \"datas[8].e\" is required. \"datas[9].e\" is required. \"datas\" does not contain 1 required value(s)","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Question is not exist","status":"NOT OK","statusCode":404}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"You're already logged in","status":"NOT OK","statusCode":403}
+{"data":null,"detail":null,"level":"warn","message":"You're already logged in","status":"NOT OK","statusCode":403}
+{"data":null,"detail":null,"level":"warn","message":"You're already logged in","status":"NOT OK","statusCode":403}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"\"username\" length must be at least 6 characters long","status":"NOT OK","statusCode":400}
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"user_score_id_subject_key"},"name":"PrismaClientKnownRequestError"}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"user_score_id_subject_key"},"name":"PrismaClientKnownRequestError"}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"user_score_id_subject_key"},"name":"PrismaClientKnownRequestError"}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"user_score_id_subject_key"},"name":"PrismaClientKnownRequestError"}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"clientVersion":"4.16.2","code":"P2002","level":"error","meta":{"target":"user_score_id_subject_key"},"name":"PrismaClientKnownRequestError"}
+{"level":"error","message":"failed to deserialize user, something went wrong"}
+{"level":"error","message":"failed to deserialize user, something went wrong"}
+{"level":"error","message":"failed to deserialize user, something went wrong"}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"File is needed","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"File is needed","status":"NOT OK","statusCode":400}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"You're already logged in","status":"NOT OK","statusCode":403}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"level":"warn","message":"email is not registered","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Access denied","status":"NOT OK","statusCode":401}
+{"level":"warn","message":"email is not registered","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Questions already answered","status":"NOT OK","statusCode":409}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Questions already answered","status":"NOT OK","statusCode":409}
+{"data":null,"detail":null,"level":"warn","message":"Questions already answered","status":"NOT OK","statusCode":409}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Questions already answered","status":"NOT OK","statusCode":409}
+{"data":null,"detail":null,"level":"warn","message":"access denied due to missing or invalid access token","status":"NOT OK","statusCode":401}
+{"data":null,"detail":null,"level":"warn","message":"Login is needed","status":"NOT OK","statusCode":401}

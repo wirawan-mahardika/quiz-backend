@@ -28,11 +28,12 @@ export function intializePassport(passport) {
       refreshToken: refreshToken,
     });
   });
-  passport.deserializeUser(async (user, done) => {
+  passport.deserializeUser(async (req, user, done) => {
     const userData = await prisma.user.findUnique({
       where: { id_user: user.id_user },
     });
     if (!userData) {
+      req.session.destroy();
       return done("failed to deserialize user, something went wrong");
     }
 

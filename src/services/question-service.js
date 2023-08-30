@@ -47,17 +47,22 @@ const getQuestion = async (params) => {
   return question;
 };
 
-const createManyQuestion = async (requestBody, file) => {
+const createManyQuestion = async (requestBody, file, id_user) => {
+  if (!file) {
+    throw new ResponseError(400, "File is needed");
+  }
   if (file.mimetype !== "application/json") {
     throw new ResponseError(400, "File extension is not valid");
   }
   const datas = JSON.parse(file.buffer);
   const id_subject = requestBody.id_subject;
   const result = validate(createManyQuestionSchema, { datas, id_subject });
+
   return prisma.questions.createMany({
     data: result.datas.map((q) => {
       return { ...q, id_subject: id_subject };
     }),
+    skipDuplicates: true,
   });
 };
 

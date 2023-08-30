@@ -6,6 +6,7 @@ CREATE TABLE `user` (
     `email` VARCHAR(51) NOT NULL,
     `name` VARCHAR(201) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
+    `role` ENUM('admin', 'user') NOT NULL,
 
     UNIQUE INDEX `user_username_key`(`username`),
     UNIQUE INDEX `user_email_key`(`email`),
@@ -45,7 +46,6 @@ CREATE TABLE `user_score` (
     `score` INTEGER NOT NULL,
     `createdAt` TIMESTAMP NOT NULL,
 
-    UNIQUE INDEX `user_score_id_subject_key`(`id_subject`),
     PRIMARY KEY (`id_score`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
