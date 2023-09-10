@@ -6,19 +6,9 @@
     "auditLog": "log\\rotate-file\\error\\.5b87f8ddc25a6150e832f17f558b1448427ad76c-audit.json",
     "files": [
         {
-            "date": 1693203932873,
-            "name": "log\\rotate-file\\error\\error.log.2023-08-28",
-            "hash": "d8fca52114bef86ac462b21b93fa40ea0a65e7f3a743876923d57404008c0602"
-        },
-        {
-            "date": 1693269716636,
-            "name": "log\\rotate-file\\error\\error.log.2023-08-29",
-            "hash": "339d99568c3d979eb784d4e9a4fd47fccf7d839a922fd2f1223e74424111199b"
-        },
-        {
-            "date": 1693365006397,
-            "name": "log\\rotate-file\\error\\error.log.2023-08-30",
-            "hash": "6fa23f7bdf5b845b7f69cb82fb08660284ace9233017bc63469e6a0ab84fb3a4"
+            "date": 1694315205196,
+            "name": "log\\rotate-file\\error\\error.log.2023-09-10",
+            "hash": "f0615e72f9c7a92766e182766acdad7fffa0a2e41d035e58cf19edb2e0ab4f4d"
         }
     ],
     "hashType": "sha256"

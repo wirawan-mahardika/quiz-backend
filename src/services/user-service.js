@@ -10,9 +10,7 @@ import bcrypt from "bcrypt";
 import { passwordStrengthTest } from "../utils/passStrengthCheck.js";
 import { generateTokenWithRefreshToken } from "../utils/jwt.js";
 import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone.js";
 
-dayjs.extend(timezone);
 
 const register = async (request) => {
   const user = validate(userRegisterValidate, request);

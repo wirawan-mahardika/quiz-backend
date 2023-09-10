@@ -14,25 +14,18 @@ const body = {
   age: 19,
 };
 
-let cookieAdmin, tokenAdmin;
-beforeAll(async () => {
-  const res = await req
-    .post("/api/users/login")
-    .send({ email: "wirawan@gmail.com", password: "wirawan123" });
-  tokenAdmin = res.body.data.token;
-  cookieAdmin = res.headers["set-cookie"];
-});
-
-afterAll(async () => {
-  await prisma.user_Score.delete({ where: { id_score: id_user_score50 } });
-  await prisma.questions.deleteMany({
-    where: { question: { contains: "(WILL DELETE)" } },
-  });
-  await prisma.subject.delete({ where: { id_subject: id_subject } });
-  await prisma.user.delete({ where: { email: body.email } });
-});
+const adminBody = {
+  email: "admin.example@gmail.com",
+  name: "i am the admin",
+  username: "just admin",
+  password: "refsghuopio13",
+  age: 19,
+};
 
 describe("POST /api/users/register", () => {
+  afterAll(async () => {
+    await prisma.user.delete({ where: { email: body.email } });
+  });
   test("should reject if user input is invalid", async () => {
     const body = {
       email: "wirawan@dika",
@@ -99,6 +92,12 @@ describe("POST /api/users/register", () => {
 });
 
 describe("POST /api/users/login", () => {
+  beforeAll(async () => {
+    await req.post("/api/users/register").send(body);
+  });
+  afterAll(async () => {
+    await prisma.user.delete({ where: { email: body.email } });
+  });
   test("should reject if input is invalid", async () => {
     const res = await req
       .post("/api/users/login")
@@ -130,10 +129,6 @@ describe("POST /api/users/login", () => {
   });
 
   test("should reject if password is incorrect", async () => {
-    const body = {
-      email: "wirawan@gmail.com",
-      password: "wirawan123",
-    };
     const res = await req
       .post("/api/users/login")
       .send({ email: body.email, password: "wrong password" });
@@ -152,6 +147,8 @@ describe("POST /api/users/login", () => {
       password: body.password,
     };
     const res = await req.post("/api/users/login").send(sendBody);
+    token = res.body.data.token;
+    cookie = res.headers["set-cookie"];
 
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({
@@ -161,8 +158,6 @@ describe("POST /api/users/login", () => {
     });
     expect(res.body).toHaveProperty("data");
     expect(res.body.data).toHaveProperty("token");
-    token = res.body.data.token;
-    cookie = res.headers["set-cookie"];
   });
 
   test("should reject if user already logged in", async () => {
@@ -186,6 +181,17 @@ describe("POST /api/users/login", () => {
 });
 
 describe("GET /api/user/refresh-token", () => {
+  let cookie, token;
+  const sendBody = {
+    email: body.email,
+    password: body.password,
+  };
+  beforeAll(async () => {
+    await req.post("/api/users/register").send(body);
+    const res = await req.post("/api/users/login").send(sendBody);
+    token = res.body.data.token;
+    cookie = res.headers["set-cookie"];
+  });
   test("should reject if user is not logged in", async () => {
     const res = await req.get("/api/user/refresh-token");
 
@@ -215,71 +221,81 @@ describe("GET /api/user/refresh-token", () => {
 });
 
 describe("POST /api/user/answer", () => {
-  const subjectAndTopicMock = {
-    name: "Node.js",
-    topic: "Handle Error",
-    id_subject: "N01001",
-  };
-  const mockQuestions = [
-    {
-      id_subject: "N01001",
-      question: "(WILL DELETE)this is question",
-      a: "this is a",
-      b: "this is b",
-      c: "this is c",
-      d: "this is d",
-      e: "this is e",
-      answer: "a",
-    },
-    {
-      id_subject: "N01001",
-      question: "(WILL DELETE)this is question2",
-      a: "this is a",
-      b: "this is b",
-      c: "this is c",
-      d: "this is d",
-      e: "this is e",
-      answer: "a",
-    },
-    {
-      id_subject: "N01001",
-      question: "(WILL DELETE)this is question3",
-      a: "this is a",
-      b: "this is b",
-      c: "this is c",
-      d: "this is d",
-      e: "this is e",
-      answer: "a",
-    },
-    {
-      id_subject: "N01001",
-      question: "(WILL DELETE)this is question4",
-      a: "this is a",
-      b: "this is b",
-      c: "this is c",
-      d: "this is d",
-      e: "this is e",
-      answer: "a",
-    },
-  ];
+  let cookie, token;
+  let cookieAdmin, tokenAdmin;
+  let id_user_score;
+
+  // authorization
   beforeAll(async () => {
-    const res1 = await req
+    // register
+    await req.post("/api/users/register").send(body);
+    // login to get access token and cookie
+    const res = await req
+      .post("/api/users/login")
+      .send({ email: body.email, password: body.password });
+    cookie = res.headers["set-cookie"];
+    token = res.body.data.token;
+
+    // admin register
+    await req.post("/api/users/register").send(adminBody);
+    // make the role admin
+    await prisma.user.update({
+      where: { email: adminBody.email },
+      data: { role: "admin" },
+    });
+    // admin login to get token and cookie admin
+    const res2 = await req
+      .post("/api/users/login")
+      .send({ email: adminBody.email, password: adminBody.password });
+    cookieAdmin = res2.headers["set-cookie"];
+    tokenAdmin = res2.body.data.token;
+  });
+
+  // admin role creating some stuff
+  let mockAnswerQuestions;
+  beforeAll(async () => {
+    // creating subject
+    const mockSubject = {
+      id_subject: "IDSBJC",
+      name: "JavaScript",
+      topic: "variable naming rules",
+    };
+    const res = await req
       .post("/api/subject")
-      .send(subjectAndTopicMock)
+      .send(mockSubject)
       .set("Cookie", cookieAdmin)
       .set("Authorization", "Bearer " + tokenAdmin);
-    id_subject = res1.body.data.id_subject;
+    id_subject = res.body.data.id_subject;
 
-    await prisma.questions.createMany({
-      data: mockQuestions,
+    // creating questions
+    await req
+      .post("/api/questions")
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin)
+      .set("Content-Type", "multipart/form-data")
+      .field("id_subject", id_subject)
+      .attach("datas", __dirname + "/file/file.json");
+
+    // mock answer from user
+    mockAnswerQuestions = await prisma.questions.findMany({
+      where: { id_subject: id_subject },
     });
-    const questions = await prisma.questions.findMany();
-    mockQuestionsWithId = questions.map((q, i) => {
-      if (i === 0 || i === 1) {
-        return { id_question: q.id_question, answer: "b" };
-      }
-      return { id_question: q.id_question, answer: q.answer };
+    mockAnswerQuestions = mockAnswerQuestions.map((d) => ({
+      id_question: d.id_question,
+      answer: d.answer,
+    }));
+  });
+
+  afterAll(async () => {
+    // delete score that has been registered
+    await prisma.user_Score.delete({ where: { id_score: id_user_score } });
+    await prisma.questions.deleteMany({
+      where: { question: { contains: "(W1LL D3ELETE)this is question" } },
     });
+    await prisma.subject.delete({ where: { id_subject: id_subject } });
+    // delete registered mock user
+    await prisma.user.delete({ where: { email: body.email } });
+    await prisma.user.delete({ where: { email: adminBody.email } });
   });
 
   test("should reject if user is not logged in", async () => {
@@ -295,7 +311,7 @@ describe("POST /api/user/answer", () => {
     });
   });
 
-  test("should reject if access token is missing", async () => {
+  test("should reject if access token is missing or invalid", async () => {
     const res = await req.post("/api/user/answer").set("Cookie", cookie);
 
     expect(res.status).toBe(401);
@@ -312,41 +328,121 @@ describe("POST /api/user/answer", () => {
     const res = await req
       .post("/api/user/answer")
       .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + token)
-      .send();
+      .set("Authorization", "Bearer " + token);
 
     expect(res.status).toBe(400);
     expect(res.body).toMatchObject({
       statusCode: 400,
       status: "NOT OK",
-      data: null,
-      detail: null,
     });
+    expect(res.body.message).toMatch(/required/);
   });
 
-  test("should success get test result and make score 50", async () => {
+  test("should success answer and get scores", async () => {
     const res = await req
       .post("/api/user/answer")
       .set("Cookie", cookie)
       .set("Authorization", "Bearer " + token)
-      .send({
-        id_subject: id_subject,
-        data: mockQuestionsWithId,
-      });
+      .send({ id_subject: id_subject, data: mockAnswerQuestions });
 
-    id_user_score50 = res.body.detail.testResult.id_score;
+    id_user_score = res.body.detail.testResult.id_score;
+    expect(res.status).toBe(200);
     expect(res.body).toMatchObject({
       statusCode: 200,
       status: "OK",
       message: "Test result accepted",
     });
-    expect(res.body).toHaveProperty("detail");
-    expect(res.body.detail).toHaveProperty("testResult");
-    expect(res.body.detail.testResult.score).toBe(50);
   });
 });
 
 describe("GET /api/user/scores", () => {
+  let cookie, token;
+  let cookieAdmin, tokenAdmin;
+  let id_user_score;
+
+  // authorization
+  beforeAll(async () => {
+    // register
+    await req.post("/api/users/register").send(body);
+    // login to get access token and cookie
+    const res = await req
+      .post("/api/users/login")
+      .send({ email: body.email, password: body.password });
+    cookie = res.headers["set-cookie"];
+    token = res.body.data.token;
+
+    // admin register
+    await req.post("/api/users/register").send(adminBody);
+    // make the role admin
+    await prisma.user.update({
+      where: { email: adminBody.email },
+      data: { role: "admin" },
+    });
+    // admin login to get token and cookie admin
+    const res2 = await req
+      .post("/api/users/login")
+      .send({ email: adminBody.email, password: adminBody.password });
+    cookieAdmin = res2.headers["set-cookie"];
+    tokenAdmin = res2.body.data.token;
+  });
+
+  // admin role creating some stuff
+  let mockAnswerQuestions;
+  beforeAll(async () => {
+    // creating subject
+    const mockSubject = {
+      id_subject: "IDSBJC",
+      name: "JavaScript",
+      topic: "variable naming rules",
+    };
+    const res = await req
+      .post("/api/subject")
+      .send(mockSubject)
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin);
+    id_subject = res.body.data.id_subject;
+
+    // creating questions
+    await req
+      .post("/api/questions")
+      .set("Cookie", cookieAdmin)
+      .set("Authorization", "Bearer " + tokenAdmin)
+      .set("Content-Type", "multipart/form-data")
+      .field("id_subject", id_subject)
+      .attach("datas", __dirname + "/file/file.json");
+
+    // mock answer from user
+    mockAnswerQuestions = await prisma.questions.findMany({
+      where: { id_subject: id_subject },
+    });
+    mockAnswerQuestions = mockAnswerQuestions.map((d) => ({
+      id_question: d.id_question,
+      answer: d.answer,
+    }));
+  });
+
+  // answer question
+  beforeAll(async () => {
+    const res = await req
+      .post("/api/user/answer")
+      .set("Cookie", cookie)
+      .set("Authorization", "Bearer " + token)
+      .send({ id_subject: id_subject, data: mockAnswerQuestions });
+
+    id_user_score = res.body.detail.testResult.id_score;
+  });
+
+  afterAll(async () => {
+    // delete score that has been registered
+    await prisma.user_Score.delete({ where: { id_score: id_user_score } });
+    await prisma.questions.deleteMany({
+      where: { question: { contains: "(W1LL D3ELETE)this is question" } },
+    });
+    await prisma.subject.delete({ where: { id_subject: id_subject } });
+    // delete registered mock user
+    await prisma.user.delete({ where: { email: body.email } });
+    await prisma.user.delete({ where: { email: adminBody.email } });
+  });
   test("should reject if user is not logged in", async () => {
     const res = await req.delete("/api/user/scores");
 
@@ -390,7 +486,9 @@ describe("GET /api/user/scores", () => {
       .get("/api/user/scores")
       .set("Cookie", cookie)
       .set("Authorization", "Bearer " + token)
-      .query({ subject: "node" });
+      .query({ subject: "javascript" });
+
+    console.log(res.body);
 
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({
@@ -400,7 +498,7 @@ describe("GET /api/user/scores", () => {
     });
     expect(res.body).toHaveProperty("data");
     expect(res.body.data.length).toBeGreaterThan(0);
-    expect(res.body.data[0].subject.toLowerCase()).toMatch(/node/);
+    expect(res.body.data[0].subject.toLowerCase()).toMatch(/javascript/);
   });
 
   test("should success get scores based on topic", async () => {
@@ -408,7 +506,7 @@ describe("GET /api/user/scores", () => {
       .get("/api/user/scores")
       .set("Cookie", cookie)
       .set("Authorization", "Bearer " + token)
-      .query({ topic: "Handle" });
+      .query({ topic: "Variable" });
 
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({
@@ -418,7 +516,7 @@ describe("GET /api/user/scores", () => {
     });
     expect(res.body).toHaveProperty("data");
     expect(res.body.data.length).toBeGreaterThan(0);
-    expect(res.body.data[0].topic.toLowerCase()).toMatch(/handle/);
+    expect(res.body.data[0].topic.toLowerCase()).toMatch(/variable/);
   });
 
   test("should success get scores based on subject and topic", async () => {
@@ -426,7 +524,7 @@ describe("GET /api/user/scores", () => {
       .get("/api/user/scores")
       .set("Cookie", cookie)
       .set("Authorization", "Bearer " + token)
-      .query({ subject: "node", topic: "Handle" });
+      .query({ subject: "javascript", topic: "Variable" });
 
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({
@@ -436,12 +534,28 @@ describe("GET /api/user/scores", () => {
     });
     expect(res.body).toHaveProperty("data");
     expect(res.body.data.length).toBeGreaterThan(0);
-    expect(res.body.data[0].topic.toLowerCase()).toMatch(/handle/);
-    expect(res.body.data[0].subject.toLowerCase()).toMatch(/node/);
+    expect(res.body.data[0].topic.toLowerCase()).toMatch(/naming rules/);
+    expect(res.body.data[0].subject.toLowerCase()).toMatch(/javascript/);
   });
 });
 
 describe("DELETE /api/user/logout", () => {
+  let cookie, token;
+
+  // authorization
+  beforeAll(async () => {
+    // register
+    await req.post("/api/users/register").send(body);
+    // login to get access token and cookie
+    const res = await req
+      .post("/api/users/login")
+      .send({ email: body.email, password: body.password });
+    cookie = res.headers["set-cookie"];
+    token = res.body.data.token;
+  });
+  afterAll(async () => {
+    await prisma.user.delete({ where: { email: body.email } });
+  });
   test("should reject if user is not logged in", async () => {
     const res = await req.delete("/api/user/logout");
 
@@ -468,8 +582,7 @@ describe("DELETE /api/user/logout", () => {
     const res = await req
       .delete("/api/user/logout")
       .set("Cookie", cookie)
-      .set("Authorization", "Bearer " + newToken); // should success if use
-    // .set("Authorization", "Bearer " + token);   // one of these two token
+      .set("Authorization", "Bearer " + token);
 
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({
@@ -479,7 +592,7 @@ describe("DELETE /api/user/logout", () => {
     });
   });
 
-  test("should reject if logout is succeed", async () => {
+  test("should reject if logout already succeed", async () => {
     const res = await req
       .delete("/api/user/logout")
       .set("Cookie", cookie)

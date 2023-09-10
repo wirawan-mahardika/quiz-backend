@@ -43,7 +43,7 @@ const login = async (req, res, next) => {
       req.login(user, (err) => {
         if (err) {
           return res.status(500).json({
-            statusCode: 401,
+            statusCode: 500,
             status: "NOT OK",
             message: "an error occured, please try again in a few minutes",
           });
